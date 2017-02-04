@@ -14,6 +14,7 @@
 #ifndef CONNECTION_CLOSED_EXCEPTION_H
 #define CONNECTION_CLOSED_EXCEPTION_H
 
-struct ConnectionClosedException {};
+struct ConnectionClosedException {
+};
 
 #endif

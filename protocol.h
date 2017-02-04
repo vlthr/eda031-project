@@ -38,7 +38,8 @@ struct Protocol {
 		/* Error codes */
 		ERR_NG_ALREADY_EXISTS  = 50, // newsgroup already exists
 		ERR_NG_DOES_NOT_EXIST  = 51, // newsgroup does not exist
-		ERR_ART_DOES_NOT_EXIST = 52  // article does not exist
+		ERR_ART_DOES_NOT_EXIST = 52,  // article does not exist
+		ERR_UNEXPECTED_BYTE = 53  // unexpected byte
 	};
 };
 
