@@ -125,6 +125,18 @@ void write_ans_list_ng(std::shared_ptr<Connection>& conn, std::vector<news::News
   }
   conn->write(Protocol::ANS_END);
 }
+std::vector<news::Newsgroup> read_ans_list_ng(std::shared_ptr<Connection>& conn) {
+  expect(conn, Protocol::ANS_LIST_NG);
+  int count = read_num_p(conn);
+  std::vector<news::Newsgroup> ngs;
+  for (int i = 0; i < count; ++i) {
+    news::Newsgroup ng;
+    ng.id = read_num_p(conn);
+    ng.name = read_string_p(conn);
+    ngs.push_back(ng);
+  }
+  expect(conn, Protocol::ANS_END);
+}
 
 news::Article read_ans_list_art(std::shared_ptr<Connection>& conn) {
   int type = conn->read();

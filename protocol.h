@@ -1,3 +1,4 @@
+#include "news.h"
 /*
  * Class Protocol: definitions of command and error codes
  * for the messaging protocol used in the news system project,
@@ -43,4 +44,19 @@ struct Protocol {
 	};
 };
 
+void expect(std::shared_ptr<Connection>& conn, char byte);
+int read_int(std::shared_ptr<Connection>& conn);
+void write_int(std::shared_ptr<Connection>& conn, int value);
+void write_num_p(std::shared_ptr<Connection>& conn, int num);
+int read_num_p(std::shared_ptr<Connection>& conn);
+void write_string_p(std::shared_ptr<Connection>& conn, std::string str);
+std::string read_string_p(std::shared_ptr<Connection>& conn);
+void write_get_article(std::shared_ptr<Connection>& conn, int group_id, int article_id);
+void write_ans_get_article(std::shared_ptr<Connection>& conn, news::Article& art);
+void write_ans_get_article_err(std::shared_ptr<Connection>& conn, int errType);
+news::Article read_ans_get_article(std::shared_ptr<Connection>& conn);
+void write_com_list_ng(std::shared_ptr<Connection>& conn);
+void read_com_list_ng(std::shared_ptr<Connection>& conn);
+void write_ans_list_ng(std::shared_ptr<Connection>& conn, std::vector<news::Newsgroup>& ngs);
+news::Article read_ans_list_art(std::shared_ptr<Connection>& conn);
 #endif
