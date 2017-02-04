@@ -26,7 +26,7 @@ all: libclientserver.a testprog clientmain servermain
 # Doesn't seem to do any damage on other systems.
 
 libclientserver.a: connection.o server.o news.o protocol.o
-	ar rv libclientserver.a news.o connection.o server.o protocol.o database.o
+	ar rv libclientserver.a news.o connection.o server.o protocol.o
 	ranlib libclientserver.a
 
 testprog: news.o testprog.o libclientserver.a database.o
