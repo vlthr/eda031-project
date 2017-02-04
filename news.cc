@@ -10,18 +10,18 @@ news::Newsgroup::~Newsgroup(){
 }
 
 std::vector<news::Article> news::Newsgroup::to_list(){
-    return articles;        
+    return articles;
 }
 
 void news::Newsgroup::sort(){
-    std::sort(articles.begin(), articles.end());
+  std::sort(articles.begin(), articles.end());
 }
 
 // Can pass by reference aswell to avoid unnecessary copy
 bool news::Newsgroup::del(unsigned int id){
-    auto before = articles.size(); 
-    auto a = std::find(articles.begin(), articles.end(), id);
-    articles.erase(a); 
+    auto before = articles.size();
+    auto a = std::find_if(articles.begin(), articles.end(), [id] (const Article& art) { return art.id == id; });
+    articles.erase(a);
     auto after = articles.size();
     return before != after;
 
@@ -41,9 +41,12 @@ bool news::Newsgroup::add(news::Article a){
 news::Article::Article(std::string t, std::string a, std::string c): title(t), author(a), content(c){}
 
 news::Article::~Article(){}
-//bool news::Article::operator<(const news::Article& a) const{
-//    return std::difftime(created, a.created) > 0;
-//}
-//bool news::Article::operator==(const news::Article& a) const{
-//    return id == a.id;
-//}
+bool news::Article::operator<(const news::Article& a) const{
+   return std::difftime(created, a.created) > 0;
+}
+bool news::Article::operator==(const news::Article& a) const{
+   return id == a.id;
+}
+bool news::Article::operator==(const unsigned int id) const{
+  return this->id == id;
+}
