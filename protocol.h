@@ -34,7 +34,7 @@ struct Protocol {
 		/* Parameters */
 		PAR_STRING = 40, // string
 		PAR_NUM    = 41, // number
-		
+
 		/* Error codes */
 		ERR_NG_ALREADY_EXISTS  = 50, // newsgroup already exists
 		ERR_NG_DOES_NOT_EXIST  = 51, // newsgroup does not exist
