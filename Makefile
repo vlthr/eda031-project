@@ -25,15 +25,15 @@ all: libclientserver.a testprog clientmain servermain
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
 
-libclientserver.a: connection.o server.o news.o protocol.o database.o
+libclientserver.a: connection.o server.o news.o protocol.o
 	ar rv libclientserver.a news.o connection.o server.o protocol.o database.o
 	ranlib libclientserver.a
 
-testprog: news.o testprog.o libclientserver.a
+testprog: news.o testprog.o libclientserver.a database.o
 
 clientmain: clientmain.o libclientserver.a
 
-servermain: servermain.o libclientserver.a
+servermain: servermain.o libclientserver.a database.o
 
 # Phony targets
 .PHONY: all clean
