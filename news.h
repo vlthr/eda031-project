@@ -31,6 +31,9 @@ namespace news{
             bool add(Article);
             Article* get(unsigned int);
             
+            bool operator<(const Newsgroup&) const;
+            bool operator==(const Newsgroup&) const;
+            bool operator==(const unsigned int) const;
             /* sorts the list of articles */
 
             void sort();
