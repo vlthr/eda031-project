@@ -16,9 +16,9 @@ namespace news{
             std::string content;
             unsigned int id;
             std::time_t created;
-           // bool operator<(const Article&) const;
-           // bool operator==(const Article&) const;
-           //
+            bool operator<(const Article&) const;
+            bool operator==(const Article&) const;
+            bool operator==(const unsigned int) const;
     };
     class Newsgroup{ 
         public:
