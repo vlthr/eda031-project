@@ -26,19 +26,27 @@ bool news::Newsgroup::del(unsigned int id){
     return before != after;
 
 }
-news::Article news::Newsgroup::get(unsigned int id){
-    auto a = std::find(articles.begin(), articles.end(), id);
-    return *a;
+news::Article* news::Newsgroup::get(unsigned int id){
+   auto a = std::find(articles.begin(), articles.end(), id);
+    if(a == articles.end()){
+        return nullptr;
+    }
+
+
+    return &*a;
 }
 bool news::Newsgroup::add(news::Article a){
-    auto before = articles.size(); 
+    if(get(a.id) != nullptr){
+        return false;
+    }
+    auto before = articles.size();
     articles.push_back(a);
     auto after = articles.size();
     return before != after;
 }
 
 // Article
-news::Article::Article(std::string t, std::string a, std::string c): title(t), author(a), content(c){}
+news::Article::Article(std::string t, std::string a, std::string c, unsigned int i): title(t), author(a), content(c), id(i){}
 
 news::Article::~Article(){}
 bool news::Article::operator<(const news::Article& a) const{
