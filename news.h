@@ -3,6 +3,7 @@
 #include <ctime>
 #include <vector>
 #include <string>
+#include <set>
 
 namespace news{
     class Article{
@@ -15,6 +16,9 @@ namespace news{
             std::string content;
             unsigned int id;
             std::time_t created;
+           // bool operator<(const Article&) const;
+           // bool operator==(const Article&) const;
+           //
     };
     class Newsgroup{ 
         public:
@@ -25,14 +29,24 @@ namespace news{
             unsigned int id;
             std::time_t created;
             bool add(Article);
-            // returns a vector with articles listed in chronological order
+            Article get(unsigned int);
+            
+            /* sorts the list of articles */
+
+            void sort();
+
+            /* return list of articles
+             * @return: articles listed in current order
+             */
+
             std::vector<Article> to_list();
+
             /* delete an article
              * @param: id of article to be deleted 
              */
             bool del(unsigned int id);
         private:
-            std::vector<Article> articles;
+            std::vector<Article> articles; 
     };
 
 }
