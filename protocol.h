@@ -1,4 +1,5 @@
 #include "news.h"
+#include <memory>
 /*
  * Class Protocol: definitions of command and error codes
  * for the messaging protocol used in the news system project,
@@ -58,5 +59,6 @@ news::Article read_ans_get_article(std::shared_ptr<Connection>& conn);
 void write_com_list_ng(std::shared_ptr<Connection>& conn);
 void read_com_list_ng(std::shared_ptr<Connection>& conn);
 void write_ans_list_ng(std::shared_ptr<Connection>& conn, std::vector<news::Newsgroup>& ngs);
+std::vector<news::Newsgroup> read_ans_list_ng(std::shared_ptr<Connection>& conn);
 news::Article read_ans_list_art(std::shared_ptr<Connection>& conn);
 #endif

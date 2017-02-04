@@ -23,14 +23,15 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	Connection conn(argv[1], port);
-	if (!conn.isConnected()) {
+  auto conn = std::make_shared<Connection>(argv[1], port);
+	if (!conn->isConnected()) {
 		cerr << "Connection attempt failed" << endl;
 		exit(1);
 	}
 
 	cout << "Sending ls...\n";
 	write_com_list_ng(conn);
+  conn->read();
   read_ans_list_ng(conn);
 	// int nbr;
 	// while (cin >> nbr) {

@@ -1,6 +1,9 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
+#include <memory>
+#include <cstdlib>
 #include "server.h"
 #include "news.h"
 #include "connection.h"
