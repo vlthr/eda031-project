@@ -15,10 +15,10 @@ void expect(std::shared_ptr<Connection>& conn, char byte){
   unsigned char msg = conn->read();
   if (msg != byte) {
     std::stringstream ss;
-    ss << "ERROR: Expected " << byte << " but got " << msg << std::endl;
-    auto r =  new ProtocolException();
-    r->errType = Protocol::ERR_UNEXPECTED_BYTE;
-    r->msg = ss.str();
+    ss << "ERROR: Expected [" << std::to_string(byte) << "] but got [" << std::to_string(msg) << "]" << std::endl;
+    ProtocolException r;
+    r.errType = Protocol::ERR_UNEXPECTED_BYTE;
+    r.msg = ss.str();
     throw r;
   }
 }
@@ -129,7 +129,7 @@ void write_ans_list_ng(std::shared_ptr<Connection>& conn, std::vector<news::News
   conn->write(Protocol::ANS_END);
 }
 std::vector<news::Newsgroup> read_ans_list_ng(std::shared_ptr<Connection>& conn) {
-  expect(conn, Protocol::ANS_LIST_NG);
+  //expect(conn, Protocol::ANS_LIST_NG);
   int count = read_num_p(conn);
   std::vector<news::Newsgroup> ngs;
   for (int i = 0; i < count; ++i) {
@@ -139,6 +139,7 @@ std::vector<news::Newsgroup> read_ans_list_ng(std::shared_ptr<Connection>& conn)
     ngs.push_back(ng);
   }
   expect(conn, Protocol::ANS_END);
+  return ngs;
 }
 
 news::Article read_ans_list_art(std::shared_ptr<Connection>& conn) {
@@ -151,9 +152,9 @@ news::Article read_ans_list_art(std::shared_ptr<Connection>& conn) {
   }
   else {
     int errType = conn->read();
-    auto r =  new ProtocolException();
-    r->errType = errType;
-    r->msg = "Protocol Error";
+    ProtocolException r;
+    r.errType = errType;
+    r.msg = "Protocol Error";
     throw r;
   }
   expect(conn, Protocol::ANS_END);

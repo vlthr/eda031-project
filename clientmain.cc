@@ -1,6 +1,7 @@
 #include "connection.h"
 #include "protocol.h"
 #include "connectionclosedexception.h"
+#include "protocolexception.h"
 
 #include <iostream>
 #include <string>
@@ -30,9 +31,18 @@ int main(int argc, char* argv[]) {
 	}
 
 	cout << "Sending ls...\n";
-	write_com_list_ng(conn);
-  conn->read();
-  read_ans_list_ng(conn);
+  try {
+    write_com_list_ng(conn);
+    conn->read();
+    std::vector<news::Newsgroup> ngs = read_ans_list_ng(conn);
+    for (auto& x : ngs){
+      std::cout << x.name << std::endl;
+    }
+  }
+  catch (const ProtocolException& p){
+    std::cout << "ERROR:" << std::endl;
+    std::cout << p.msg << std::endl;
+  }
 	// int nbr;
 	// while (cin >> nbr) {
 	// 	try {

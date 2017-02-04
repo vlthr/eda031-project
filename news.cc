@@ -5,6 +5,8 @@
 // Newsgroup
 news::Newsgroup::Newsgroup(std::string n, unsigned int i, std::time_t c):name(n), id(i), created(c) {}
 
+news::Newsgroup::Newsgroup(){}
+
 news::Newsgroup::~Newsgroup(){
     articles.clear();
 }
@@ -47,6 +49,8 @@ bool news::Newsgroup::add(news::Article a){
 
 // Article
 news::Article::Article(std::string t, std::string a, std::string c, unsigned int i): title(t), author(a), content(c), id(i){}
+
+news::Article::Article(){}
 
 news::Article::~Article(){}
 bool news::Article::operator<(const news::Article& a) const{

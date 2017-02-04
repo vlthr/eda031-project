@@ -20,18 +20,20 @@ LDLIBS = -lclientserver
 #CPPFLAGS =  -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
 
-all: libclientserver.a testprog clientmain
+all: libclientserver.a testprog clientmain servermain
 
 # Create the library; ranlib is for Darwin (OS X) and maybe other systems.
 # Doesn't seem to do any damage on other systems.
 
-libclientserver.a: connection.o server.o protocol.o
-	ar rv libclientserver.a  connection.o server.o protocol.o
+libclientserver.a: connection.o server.o news.o protocol.o
+	ar rv libclientserver.a news.o connection.o server.o protocol.o
 	ranlib libclientserver.a
 
-testprog: news.o testprog.o
+testprog: news.o testprog.o libclientserver.a
 
-clientmain: clientmain.o
+clientmain: clientmain.o libclientserver.a
+
+servermain: servermain.o libclientserver.a
 
 # Phony targets
 .PHONY: all clean
