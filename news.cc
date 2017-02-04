@@ -31,8 +31,6 @@ news::Article* news::Newsgroup::get(unsigned int id){
     if(a == articles.end()){
         return nullptr;
     }
-
-
     return &*a;
 }
 bool news::Newsgroup::add(news::Article a){
@@ -43,6 +41,17 @@ bool news::Newsgroup::add(news::Article a){
     articles.push_back(a);
     auto after = articles.size();
     return before != after;
+}
+
+bool news::Newsgroup::operator<(const news::Newsgroup& a) const{
+   return std::difftime(created, a.created) > 0;
+}
+
+bool news::Newsgroup::operator==(const news::Newsgroup& a) const{
+   return id == a.id;
+}
+bool news::Newsgroup::operator==(const unsigned int id) const{
+  return this->id == id;
 }
 
 // Article

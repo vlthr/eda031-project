@@ -1,4 +1,5 @@
 #include "news.h"
+#include "database.h"
 #include <iostream>
 #include <ctime>
 #include <iostream>
@@ -21,7 +22,10 @@ int main(){
         cout << a.title<<endl;
         //cout << "Title " + v.title + " Author " + v.author + " Content " + content << endl;
        }
-
+       for(Article& a: v){
+        cout << a.title<<endl;
+        //cout << "Title " + v.title + " Author " + v.author + " Content " + content << endl;
+       }
 
 
 

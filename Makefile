@@ -26,7 +26,7 @@ libclientserver.a: connection.o server.o protocol.o
 	ar rv libclientserver.a  connection.o server.o
 	ranlib libclientserver.a
 
-testprog: news.o testprog.o
+testprog: news.o testprog.o database.o
 
 # Phony targets
 .PHONY: all clean
