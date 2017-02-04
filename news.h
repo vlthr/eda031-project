@@ -9,7 +9,7 @@ namespace news{
     class Article{
         public:
             Article();
-            Article(std::string, std::string, std::string);
+            Article(std::string, std::string, std::string, unsigned int);
             ~Article();
             std::string title;
             std::string author;
@@ -29,7 +29,7 @@ namespace news{
             unsigned int id;
             std::time_t created;
             bool add(Article);
-            Article get(unsigned int);
+            Article* get(unsigned int);
             
             /* sorts the list of articles */
 
