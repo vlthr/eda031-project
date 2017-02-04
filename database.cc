@@ -1,9 +1,9 @@
 #include "database.h"
 #include "news.h"
+#include <iostream>
 #include <algorithm>
 #include <ctime>
 Database::Database(){}
-
 Database::~Database(){}
 
 std::vector<news::Newsgroup> Database::list_newsgroup(){
@@ -26,6 +26,9 @@ bool Database::exists(std::string name){
     for(auto n: newsgroups){
         if(n.name == name) return true;
     }
+
+    //std::cout<< "entering exists " << std::endl;
+
     return false;
 }
 void Database::sort(){
