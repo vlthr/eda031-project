@@ -1,5 +1,6 @@
 #include "news.h"
 #include <ctime>
+#include <sstream>
 #include <algorithm>
 
 // Newsgroup
@@ -56,6 +57,15 @@ bool news::Newsgroup::operator==(const unsigned int id) const{
   return this->id == id;
 }
 
+std::istream& news::operator>>(std::istream&  input, news::Newsgroup& n){
+    input >> n.name;
+    input >> n.id;
+    long long c;
+    input >> c;
+    n.created = c;
+    return input;
+}
+
 // Article
 news::Article::Article(std::string t, std::string a, std::string c, unsigned int i): title(t), author(a), content(c), id(i){}
 
@@ -71,3 +81,11 @@ bool news::Article::operator==(const news::Article& a) const{
 bool news::Article::operator==(const unsigned int id) const{
   return this->id == id;
 }
+std::istream& news::operator>>(std::istream&  input, news::Article& a ){
+    input >> a.title >> a.author >> a.content >> a.id;
+    long long c;
+    input >> c;
+    a.created = c;
+    return input;
+}
+
