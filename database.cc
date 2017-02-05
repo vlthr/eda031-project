@@ -6,11 +6,14 @@
 Database::Database(){}
 Database::~Database(){}
 
-std::vector<news::Newsgroup> Database::list_newsgroup(){
-    return newsgroups;
+std::vector<std::pair<int, std::string>> Database::list_newsgroups() {
+    std::vector<std::pair<int, std::string>> pairs;
+    for (auto& ng : newsgroups) {
+      pairs.push_back(std::make_pair(ng.id, ng.name));
+    }
+    return pairs;
 }
-
-bool Database::add_newsgroup(std::string name){
+bool Database::create_newsgroup(std::string name){
     if(exists(name)) return false;
     auto before = newsgroups.size();
     news::Newsgroup n(name, id_ctr,  time(0));
@@ -22,24 +25,35 @@ bool Database::add_newsgroup(std::string name){
     }else return false;
 }
 
+bool delete_newsgroup(int id){
+  return true;
+}
+
+news::Article get_article(int ng_id, int article_id) {
+  return news::Article();
+}
+
+bool create_article(int ng_id, std::string title,std::string author, std::string text) {
+  return true;
+}
+bool delete_article(int ng_id, int article_id) {
+  return true;
+}
+
 bool Database::exists(std::string name){
     for(auto n: newsgroups){
         if(n.name == name) return true;
     }
-
-    //std::cout<< "entering exists " << std::endl;
-
     return false;
 }
 void Database::sort(){
-    
   std::sort(newsgroups.begin(), newsgroups.end());
 }
 
-news::Newsgroup* Database::get(unsigned int id){
-   auto a = std::find(newsgroups.begin(), newsgroups.end(), id);
+std::vector<news::Article> Database::list_articles(int ng_id){
+   auto a = std::find(newsgroups.begin(), newsgroups.end(), ng_id);
     if(a == newsgroups.end()){
-        return nullptr;
+      //todo: throw
     }
-    return &*a;
+    return (&*a)->to_list();
 }

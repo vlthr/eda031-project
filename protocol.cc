@@ -156,12 +156,12 @@ void read_com_list_ng(std::shared_ptr<Connection>& conn) {
   expect(conn, Protocol::COM_END);
 }
 
-void write_ans_list_ng(std::shared_ptr<Connection>& conn, const std::vector<news::Newsgroup>& ngs) {
+void write_ans_list_ng(std::shared_ptr<Connection>& conn, const std::vector<std::pair<int, std::string>>& ngs) {
   conn->write(Protocol::ANS_LIST_NG);
   write_num_p(conn, ngs.size());
   for (auto& ng : ngs){
-    write_num_p(conn, ng.id);
-    write_string_p(conn, ng.name);
+    write_num_p(conn, ng.first);
+    write_string_p(conn, ng.second);
   }
   conn->write(Protocol::ANS_END);
 }

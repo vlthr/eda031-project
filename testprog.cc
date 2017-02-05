@@ -4,7 +4,6 @@
 #include <ctime>
 #include <iostream>
 #include <vector>
-#include <sqlite3.h>
 
 
 int main(){

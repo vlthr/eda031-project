@@ -10,8 +10,8 @@ class Database{
   ~Database();
 
   // returns a list with newsgroups in sorted order;
-  std::vector<std::pair<int, std::string>> Database::list_newsgroup();
-  std::vector<news::Article> Database::list_articles(int ng_id){
+  std::vector<std::pair<int, std::string>> list_newsgroups();
+  std::vector<news::Article> list_articles(int ng_id);
 
   bool exists(std::string);
   bool create_newsgroup(std::string name);
@@ -23,7 +23,6 @@ class Database{
   void sort();
   /* inserts d into this list as the first element */
   void insertFirst(int d);
-
  private:
   std::vector<news::Newsgroup> newsgroups;
   unsigned int id_ctr;
