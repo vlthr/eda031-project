@@ -1,28 +1,43 @@
 #include "sqldb.h"
 #include "news.h"
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 #include <ctime>
 #include <sqlite3.h>
 #include <stdio.h>
 
-
 static int callbackArticle(void *data, int argc, char **argv, char **azColName){
    int i;
-   fprintf(stderr, "%s: ", (const char*)data);
+   std::string articledata; 
    for(i=0; i<argc; i++){
-      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+       articledata+=argv[i];
+       articledata+="\n";
    }
-   printf("\n");
+   std::istringstream ss(articledata);
+   news::Article art;
+      
+   ss >> art;
+   std::vector<news::Article>* grp = (std::vector<news::Article>*)data;
+   grp->push_back(art);
+
    return 0;
 }
 static int callbackNewsgroup(void *data, int argc, char **argv, char **azColName){
    int i;
-   fprintf(stderr, "%s: ", (const char*)data);
-   for(i=0; i<argc; i++){
-      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+   std::string newsgroupdata;
+   for(i=0; i<3; i++){
+       newsgroupdata+=argv[i];
+       newsgroupdata+="\n";
+       printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
    }
-   printf("\n");
+
+   std::istringstream ss(newsgroupdata);
+   news::Newsgroup ng;
+   ss >> ng;
+   std::vector<news::Newsgroup>* grp = (std::vector<news::Newsgroup>*)data;
+   grp->push_back(ng);
+   std::cout << grp->size(); 
    return 0;
 }
 
@@ -37,7 +52,6 @@ Sqldb::Sqldb(std::string fn){
     }else{
        fprintf(stderr, "Opened database successfully\n");
     }
-
  }
  
 
@@ -50,20 +64,23 @@ std::vector<news::Newsgroup> Sqldb::list_newsgroup(){
 
     char *zErrMsg = "Failed to get newsgroup list from database";    
     int rc;
-    std::vector<news::Newsgroup> *data;
+    std::vector<news::Newsgroup>* data = new std::vector<news::Newsgroup>();
     
     /* Create SQL statement  */
-    char* sql = "SELECT * FROM NEWSGROUPS";  
+    char* sql = "SELECT * FROM newsgroups";  
 
     /* Execute SQL statement */
     
-
     rc = sqlite3_exec(db, sql, callbackNewsgroup, (void*)data, &zErrMsg);
     if( rc != SQLITE_OK ){
        fprintf(stderr, "SQL error: %s\n", zErrMsg);
        sqlite3_free(zErrMsg);
     }else{
        fprintf(stdout, "Operation done successfully\n");
+    }
+    for(news::Newsgroup a: *data){
+        std::cout << "Printing newsgroups name " << std::endl;
+        std::cout << a.name;
     }
     sqlite3_close(db);
     return *data;
