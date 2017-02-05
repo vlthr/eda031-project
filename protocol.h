@@ -58,7 +58,7 @@ void write_ans_get_art(std::shared_ptr<Connection>& conn, const news::Article& a
 news::Article read_ans_get_art(std::shared_ptr<Connection>& conn);
 void write_com_list_ng(std::shared_ptr<Connection>& conn);
 void read_com_list_ng(std::shared_ptr<Connection>& conn);
-void write_ans_list_ng(std::shared_ptr<Connection>& conn, const std::vector<news::Newsgroup>& ngs);
+void write_ans_list_ng(std::shared_ptr<Connection>& conn, const std::vector<std::pair<int, std::string>>& pairs);
 std::vector<news::Newsgroup> read_ans_list_ng(std::shared_ptr<Connection>& conn);
 news::Article read_ans_get_art(std::shared_ptr<Connection>& conn);
 void write_com_create_ng(std::shared_ptr<Connection>& conn, std::string& name);

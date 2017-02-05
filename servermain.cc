@@ -19,7 +19,7 @@ void initialize_db(Database& db){
   news::Article a("title", "Author", "content", 1);
   news::Article b("title1", "Author", "content", 2);
   news::Article c("title2", "Author", "content", 2);
-  db.add_newsgroup("std::yalla");
+  db.create_newsgroup("std::yalla");
   std::cout << n.add(a) << std::endl;
   std::cout << n.add(c) << std::endl;
   std::cout << n.add(b) << std::endl;
@@ -63,13 +63,13 @@ int main(int argc, char* argv[]){
         switch (type) {
         case Protocol::COM_LIST_NG: {
             read_com_list_ng(conn);
-            std::vector<news::Newsgroup> ngs = db.list_newsgroup();
+            auto ngs = db.list_newsgroups();
             write_ans_list_ng(conn, ngs);
           }
           break;
         case Protocol::COM_CREATE_NG:{
           std::string name = read_com_create_ng(conn);
-          if (db.add_newsgroup(name)){
+          if (db.create_newsgroup(name)){
             write_ack(conn, Protocol::ANS_CREATE_NG);
           } else {
             write_nak(conn, Protocol::ANS_CREATE_NG, Protocol::ERR_NG_ALREADY_EXISTS);
@@ -80,13 +80,13 @@ int main(int argc, char* argv[]){
           break;
         case Protocol::COM_LIST_ART: {
           int ng_id = read_com_list_art(conn);
-          news::Newsgroup* ng = db.get(ng_id);
-          if (ng) {
-            const auto& articles = ng->to_list();
-            write_ans_list_art(conn, articles);
-          } else {
-            write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
-          }
+          std::vector<news::Article> ng = db.list_articles(ng_id);
+          // if (ng) {
+          //   const auto& articles = ng->to_list();
+          //   write_ans_list_art(conn, articles);
+          // } else {
+          //   write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
+          // }
           break;
         }
         case Protocol::COM_CREATE_ART: {
