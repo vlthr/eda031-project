@@ -16,13 +16,10 @@
 
 void initialize_db(Database& db){
   news::Newsgroup n("a", 3, time(0));
-  news::Article a("title", "Author", "content", 1);
-  news::Article b("title1", "Author", "content", 2);
-  news::Article c("title2", "Author", "content", 2);
   db.create_newsgroup("std::yalla");
-  std::cout << n.add(a) << std::endl;
-  std::cout << n.add(c) << std::endl;
-  std::cout << n.add(b) << std::endl;
+  std::cout << n.add("title", "Author", "content") << std::endl;
+  std::cout << n.add("title1", "Author", "content") << std::endl;
+  std::cout << n.add("title2", "Author", "content") << std::endl;
   std::vector<news::Article> v = n.to_list();
 
   for(news::Article& a: v){
@@ -80,12 +77,15 @@ int main(int argc, char* argv[]){
           break;
         case Protocol::COM_LIST_ART: {
           int ng_id = read_com_list_art(conn);
-          std::vector<news::Article> ng = db.list_articles(ng_id);
+          try {
+          std::vector<news::Article> articles = db.list_articles(ng_id);
+            write_ans_list_art(conn, articles);
+          }
+          catch (std::exception& e) {
+            write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
+          }
           // if (ng) {
-          //   const auto& articles = ng->to_list();
-          //   write_ans_list_art(conn, articles);
           // } else {
-          //   write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
           // }
           break;
         }

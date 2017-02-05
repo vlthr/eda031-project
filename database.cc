@@ -25,15 +25,35 @@ bool Database::create_newsgroup(std::string name){
     }else return false;
 }
 
-bool delete_newsgroup(int id){
-  return true;
+bool Database::delete_newsgroup(int id){
+  int to_delete = -1;
+  for (int i = 0; i < newsgroups.size(); ++i) {
+    news::Newsgroup ng = newsgroups.at(i);
+    if (ng.id == id) {
+      to_delete = i;
+      break;
+    }
+  }
+  if (to_delete >= 0) {
+    newsgroups.erase(newsgroups.begin()+to_delete); 
+    return true;
+  }
+  return false;
 }
 
-news::Article get_article(int ng_id, int article_id) {
-  return news::Article();
+news::Article Database::get_article(int ng_id, int article_id) {
+  for (auto& art : list_articles(ng_id)){
+    if (art.id == article_id) return art;
+  }
+  throw std::invalid_argument("Unknown article_id...");
 }
 
-bool create_article(int ng_id, std::string title,std::string author, std::string text) {
+bool Database::create_article(int ng_id, std::string title,std::string author, std::string text) {
+  for (auto& ng : newsgroups) {
+    if (ng.id == ng_id) {
+      ng.add)
+    }
+  }
   return true;
 }
 bool delete_article(int ng_id, int article_id) {
@@ -53,7 +73,7 @@ void Database::sort(){
 std::vector<news::Article> Database::list_articles(int ng_id){
    auto a = std::find(newsgroups.begin(), newsgroups.end(), ng_id);
     if(a == newsgroups.end()){
-      //todo: throw
+      throw new std::invalid_argument("Unknown ng_id...");
     }
     return (&*a)->to_list();
 }

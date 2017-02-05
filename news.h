@@ -31,7 +31,7 @@ namespace news{
             std::string name;
             unsigned int id;
             std::time_t created;
-            bool add(Article);
+            bool add(std::string,std::string,std::string);
             Article* get(unsigned int);
             
             bool operator<(const Newsgroup&) const;
@@ -56,6 +56,7 @@ namespace news{
             bool del(unsigned int id);
         private:
             std::vector<Article> articles; 
+            int id_ctr;
     };
      
 std::istream& operator>>(std::istream& is, Article& a);
