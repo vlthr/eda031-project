@@ -71,18 +71,23 @@ int main(int argc, char* argv[]){
           break;
         case Protocol::COM_DELETE_NG:
           break;
-        case Protocol::COM_LIST_ART:
+        case Protocol::COM_LIST_ART: {
           int ng_id = read_com_list_art(conn);
           break;
-        case Protocol::COM_CREATE_ART:
+        }
+        case Protocol::COM_CREATE_ART: {
           break;
-        case Protocol::COM_DELETE_ART:
+        }
+        case Protocol::COM_DELETE_ART: {
           break;
-        case Protocol::COM_GET_ART:
+        }
+        case Protocol::COM_GET_ART:{
           break;
-        default:
+        }
+        default: {
           // TODO: BREAK
           break;
+        }
         }
 			} catch (ConnectionClosedException&) {
 				server.deregisterConnection(conn);
