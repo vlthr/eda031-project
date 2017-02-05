@@ -2,6 +2,9 @@
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
+#include "database.h"
+#include "news.h"
+#include "protocol.h"
 
 #include <memory>
 #include <iostream>
@@ -10,27 +13,46 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <memory>
-#include "news.h"
-#include "connection.h"
-#include "protocol.h"
 
-using namespace std;
+void initialize_db(Database& db){
+  news::Newsgroup n("a", 3, time(0));
+  news::Article a("title", "Author", "content", 1);
+  news::Article b("title1", "Author", "content", 2);
+  news::Article c("title2", "Author", "content", 2);
+  db.add_newsgroup("std::yalla");
+  std::cout << n.add(a) << std::endl;
+  std::cout << n.add(c) << std::endl;
+  std::cout << n.add(b) << std::endl;
+  std::vector<news::Article> v = n.to_list();
+
+  for(news::Article& a: v){
+    std::cout << a.title<<std::endl;
+    //std::cout << "Title " + v.title + " Author " + v.author + " Content " + content << std::endl;
+  }
+  for(news::Article& a: v){
+    std::cout << a.id<<std::endl;
+    //std::cout << "Title " + v.title + " Author " + v.author + " Content " + content << std::endl;
+  }
+  std::cout << "Testing if newsgroup can be found : " << db.exists("std::yalla") << std::endl;
+}
 
 int main(int argc, char* argv[]){
+  Database db;
+  initialize_db(db);
 	if (argc != 2) {
-		cerr << "Usage: myserver port-number" << endl;
-		exit(1);
+		std::cerr << "Usage: myserver port-number" << std::endl;
+    exit(1);
 	}
 	int port = -1;
 	try {
-		port = stoi(argv[1]);
-	} catch (exception& e) {
-		cerr << "Wrong port number. " << e.what() << endl;
+		port = std::stoi(argv[1]);
+	} catch (std::exception& e) {
+		std::cerr << "Wrong port number. " << e.what() << std::endl;
 		exit(1);
 	}
 	Server server(port);
 	if (!server.isReady()) {
-		cerr << "Server initialization error." << endl;
+		std::cerr << "Server initialization error." << std::endl;
 		exit(1);
 	}
 	while (true) {
@@ -38,18 +60,57 @@ int main(int argc, char* argv[]){
 		if (conn != nullptr) {
 			try {
         int type = conn->read();
-        read_com_list_ng(conn);
-        std::vector<news::Newsgroup> ngs;
-        ngs.push_back(news::Newsgroup("newsgroup alpha", 0, std::time(0)));
-        write_ans_list_ng(conn, ngs);
+        switch (type) {
+        case Protocol::COM_LIST_NG: {
+            read_com_list_ng(conn);
+            std::vector<news::Newsgroup> ngs = db.list_newsgroup();
+            write_ans_list_ng(conn, ngs);
+          }
+          break;
+        case Protocol::COM_CREATE_NG:{
+          std::string name = read_com_create_ng(conn);
+          if (db.add_newsgroup(name)){
+            write_ack(conn, Protocol::ANS_CREATE_NG);
+          } else {
+            write_nak(conn, Protocol::ANS_CREATE_NG, Protocol::ERR_NG_ALREADY_EXISTS);
+          }
+          break;
+        }
+        case Protocol::COM_DELETE_NG:
+          break;
+        case Protocol::COM_LIST_ART: {
+          int ng_id = read_com_list_art(conn);
+          news::Newsgroup* ng = db.get(ng_id);
+          if (ng) {
+            const auto& articles = ng->to_list();
+            write_ans_list_art(conn, articles);
+          } else {
+            write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
+          }
+          break;
+        }
+        case Protocol::COM_CREATE_ART: {
+          break;
+        }
+        case Protocol::COM_DELETE_ART: {
+          break;
+        }
+        case Protocol::COM_GET_ART:{
+          break;
+        }
+        default: {
+          // TODO: BREAK
+          break;
+        }
+        }
 			} catch (ConnectionClosedException&) {
 				server.deregisterConnection(conn);
-				cout << "Client closed connection" << endl;
+				std::cout << "Client closed connection" << std::endl;
 			}
 		} else {
-			conn = make_shared<Connection>();
+			conn = std::make_shared<Connection>();
 			server.registerConnection(conn);
-			cout << "New client connects" << endl;
+			std::cout << "New client connects" << std::endl;
 		}
 	}
 }
