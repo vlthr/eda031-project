@@ -80,12 +80,15 @@ int main(int argc, char* argv[]){
           break;
         case Protocol::COM_LIST_ART: {
           int ng_id = read_com_list_art(conn);
-          std::vector<news::Article> ng = db.list_articles(ng_id);
+          try {
+          std::vector<news::Article> articles = db.list_articles(ng_id);
+            write_ans_list_art(conn, articles);
+          }
+          catch (std::exception& e) {
+            write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
+          }
           // if (ng) {
-          //   const auto& articles = ng->to_list();
-          //   write_ans_list_art(conn, articles);
           // } else {
-          //   write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
           // }
           break;
         }

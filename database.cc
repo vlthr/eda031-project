@@ -53,7 +53,7 @@ void Database::sort(){
 std::vector<news::Article> Database::list_articles(int ng_id){
    auto a = std::find(newsgroups.begin(), newsgroups.end(), ng_id);
     if(a == newsgroups.end()){
-      //todo: throw
+      throw new std::invalid_argument("Unknown ng_id...");
     }
     return (&*a)->to_list();
 }
