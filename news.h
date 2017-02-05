@@ -2,6 +2,7 @@
 #define NEWS_H
 #include <ctime>
 #include <vector>
+#include <iostream>
 #include <string>
 #include <set>
 
@@ -19,6 +20,8 @@ namespace news{
             bool operator<(const Article&) const;
             bool operator==(const Article&) const;
             bool operator==(const unsigned int) const;
+            friend std::istream& operator>>(std::istream& input, Article& a);
+
     };
     class Newsgroup{ 
         public:
@@ -34,7 +37,10 @@ namespace news{
             bool operator<(const Newsgroup&) const;
             bool operator==(const Newsgroup&) const;
             bool operator==(const unsigned int) const;
-            /* sorts the list of articles */
+            friend std::istream& operator>>(std::istream&  input, Newsgroup& n);
+
+
+                  /* sorts the list of articles */
 
             void sort();
 
@@ -51,7 +57,9 @@ namespace news{
         private:
             std::vector<Article> articles; 
     };
-
+     
+std::istream& operator>>(std::istream& is, Article& a);
+std::istream& operator>>(std::istream& is, Newsgroup& n);
 }
 
 #endif
