@@ -4,9 +4,9 @@
 #include <algorithm>
 
 // Newsgroup
-news::Newsgroup::Newsgroup(std::string n, unsigned int i, std::time_t c):name(n), id(i), created(c) {}
+news::Newsgroup::Newsgroup(std::string n, unsigned int i, std::time_t c):name(n), id(i), created(c), id_ctr(0) {}
 
-news::Newsgroup::Newsgroup(){}
+news::Newsgroup::Newsgroup() : id_ctr(0) {}
 
 news::Newsgroup::~Newsgroup(){
     articles.clear();
@@ -36,14 +36,12 @@ news::Article* news::Newsgroup::get(unsigned int id){
     }
     return &*a;
 }
-bool news::Newsgroup::add(news::Article a){
-    if(get(a.id) != nullptr){
-        return false;
-    }
-    auto before = articles.size();
-    articles.push_back(a);
-    auto after = articles.size();
-    return before != after;
+
+bool news::Newsgroup::add(std::string title, std::string author, std::string text){
+  id_ctr++;
+  news::Article a(title, author, text, id);
+  articles.push_back(a);
+  return true;
 }
 
 bool news::Newsgroup::operator<(const news::Newsgroup& a) const{

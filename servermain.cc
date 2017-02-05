@@ -16,13 +16,10 @@
 
 void initialize_db(Database& db){
   news::Newsgroup n("a", 3, time(0));
-  news::Article a("title", "Author", "content", 1);
-  news::Article b("title1", "Author", "content", 2);
-  news::Article c("title2", "Author", "content", 2);
   db.create_newsgroup("std::yalla");
-  std::cout << n.add(a) << std::endl;
-  std::cout << n.add(c) << std::endl;
-  std::cout << n.add(b) << std::endl;
+  std::cout << n.add("title", "Author", "content") << std::endl;
+  std::cout << n.add("title1", "Author", "content") << std::endl;
+  std::cout << n.add("title2", "Author", "content") << std::endl;
   std::vector<news::Article> v = n.to_list();
 
   for(news::Article& a: v){

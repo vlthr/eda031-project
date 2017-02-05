@@ -78,7 +78,7 @@ void expect(std::shared_ptr<Connection>& conn, char byte){
   unsigned char msg = conn->read();
   if (msg != byte) {
     std::stringstream ss;
-    ss << "ERROR: Expected [" << std::to_string(byte) << "] but got [" << std::to_string(msg) << "]" << std::endl;
+    ss << "ERROR: Expected [" << protocol_to_str(byte) << "] but got [" << protocol_to_str(msg) << "]" << std::endl;
     ProtocolException r;
     r.errType = Protocol::ERR_UNEXPECTED_BYTE;
     r.msg = ss.str();
