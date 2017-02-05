@@ -48,7 +48,7 @@ static int callbackNewsgroup(void *data, int argc, char **argv, char **azColName
 /* Database Definition */
 
 Sqldb::Sqldb(std::string fn="Database.db"){
-    std::string zErrMsg = "";
+    const char *zErrMsg = "";
     int rc;
     id_ctr = 40;
     const char * c = fn.c_str();   
@@ -72,7 +72,7 @@ Sqldb::~Sqldb(){
 
 
 std::vector<std::pair<int, std::string>> Sqldb::list_newsgroups(){
-    std::string zErrMsg = "Failed to get newsgroup list from database";
+    const char *zErrMsg = "Failed to get newsgroup list from database";
     int rc;
     std::vector<std::pair<int, std::string>>* data = new std::vector<std::pair<int, std::string>>();
 
@@ -91,7 +91,7 @@ std::vector<std::pair<int, std::string>> Sqldb::list_newsgroups(){
 
 
 std::vector<news::Article> Sqldb::list_articles(int ng_id){
-    std::string zErrMsg = "Failed to get article list from database";
+    const char *zErrMsg = "Failed to get article list from database";
     int rc;
     std::vector<news::Article>* data = new std::vector<news::Article>();
 
@@ -119,7 +119,7 @@ std::vector<news::Article> Sqldb::list_articles(int ng_id){
 
 
 bool Sqldb::create_newsgroup(std::string name){
-    std::string zErrMsg = "Failed to create newsgroup ";
+    const char *zErrMsg = "Failed to create newsgroup ";
     int rc;
     std::vector<std::pair<int, std::string>>* data = new std::vector<std::pair<int, std::string>>();
 
@@ -132,7 +132,7 @@ bool Sqldb::create_newsgroup(std::string name){
         ");";
 
     /* Execute SQL statement */
-    rc = sqlite3_exec(db, sql.c_str(), empty, (void*)data, nullptr);
+    rc = sqlite3_exec(db, sql.c_str(), nullptr, (void*)data, nullptr);
     if( rc != SQLITE_OK ){
        fprintf(stderr, "SQL error: %s\n", zErrMsg);
         return false;
@@ -144,7 +144,7 @@ bool Sqldb::create_newsgroup(std::string name){
 }
 
 bool Sqldb::delete_newsgroup(int id){
-    std::string zErrMsg = "Failed to delete newsgroup ";
+    const char *zErrMsg = "Failed to delete newsgroup ";
     int rc;
     std::vector<std::pair<int, std::string>>* data = new std::vector<std::pair<int, std::string>>();
 
@@ -167,7 +167,7 @@ bool Sqldb::delete_newsgroup(int id){
 }
 
 bool Sqldb::create_article(int ng_id, std::string title,std::string author, std::string text){
-    std::string zErrMsg = "Failed to create article ";
+    const char *zErrMsg = "Failed to create article ";
     int rc;
     std::vector<std::pair<int, std::string>>* data = new std::vector<std::pair<int, std::string>>();
     /* Create SQL statement  */
@@ -191,7 +191,7 @@ bool Sqldb::create_article(int ng_id, std::string title,std::string author, std:
 }
 
 bool Sqldb::delete_article(int ng_id, int article_id){
-    std::string zErrMsg = "Failed to create article ";
+    const char *zErrMsg = "Failed to create article ";
     int rc;
     bool val = false;
     bool* data = &val;
@@ -215,7 +215,7 @@ bool Sqldb::delete_article(int ng_id, int article_id){
     }
 }
 bool Sqldb::exists(std::string name){
-    std::string zErrMsg = "Failed to create article ";
+    const char *zErrMsg = "Failed to create article ";
     int rc;
     bool val = false;
     bool* data = &val;
@@ -226,7 +226,8 @@ bool Sqldb::exists(std::string name){
     /* Execute SQL statement */
     rc = sqlite3_exec(db, sql.c_str(), flip, (void*)data, nullptr);
     if( rc != SQLITE_OK ){
-       fprintf(stderr, "SQL error: %s\n", zErrMsg);
+    //   fprintf(stderr, "SQL error: %s\n", zErrMsg);
+
         return false;
     }else{ 
        fprintf(stdout, "Operation done successfully\n");
@@ -234,7 +235,7 @@ bool Sqldb::exists(std::string name){
     }
 }
 bool Sqldb::exists(int ng_id){
-    std::string zErrMsg = "Failed to create article ";
+    const char *zErrMsg = "Failed to create article ";
     int rc;
     bool val = false;
     bool* data = &val;

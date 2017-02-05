@@ -34,5 +34,6 @@
 *.exe
 *.out
 *.app
-
+# Swap
+*.swp
 # End of https://www.gitignore.io/api/c++

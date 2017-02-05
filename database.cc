@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <ctime>
+#include <stdexcept>
 Database::Database(){}
 Database::~Database(){}
 
