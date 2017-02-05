@@ -51,10 +51,11 @@ news::Article Database::get_article(int ng_id, int article_id) {
 bool Database::create_article(int ng_id, std::string title,std::string author, std::string text) {
   for (auto& ng : newsgroups) {
     if (ng.id == ng_id) {
-      ng.add)
+      ng.add(title, author, text);
+      return true;
     }
   }
-  return true;
+  return false;
 }
 bool delete_article(int ng_id, int article_id) {
   return true;

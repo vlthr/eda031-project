@@ -14,7 +14,7 @@ CXXFLAGS =  -O2 -Wall -Wextra -pedantic-errors -Wold-style-cast
 CXXFLAGS += -std=c++11 
 CXXFLAGS += -g
 LDFLAGS =   -g -L.
-LDLIBS = -lclientserver
+LDLIBS = -lclientserver -lsqlite3
 
 #CXXFLAGS =  -stdlib=libc++
 #CPPFLAGS =  -stdlib=libc++
@@ -29,11 +29,11 @@ libclientserver.a: connection.o server.o news.o protocol.o
 	ar rv libclientserver.a news.o connection.o server.o protocol.o
 	ranlib libclientserver.a
 
-testprog: news.o testprog.o libclientserver.a database.o
+testprog: news.o testprog.o libclientserver.a database.o sqldb.o
 
 clientmain: clientmain.o libclientserver.a
 
-servermain: servermain.o libclientserver.a database.o
+servermain: servermain.o libclientserver.a database.o sqldb.o
 
 # Phony targets
 .PHONY: all clean
