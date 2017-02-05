@@ -26,9 +26,6 @@ bool Database::exists(std::string name){
     for(auto n: newsgroups){
         if(n.name == name) return true;
     }
-
-    //std::cout<< "entering exists " << std::endl;
-
     return false;
 }
 void Database::sort(){
@@ -41,5 +38,6 @@ news::Newsgroup* Database::get(unsigned int id){
     if(a == newsgroups.end()){
         return nullptr;
     }
+
     return &*a;
 }

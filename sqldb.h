@@ -11,7 +11,7 @@ public:
 	~Sqldb();
 	
         // returns a list with newsgroups in sorted order;
-        std::vector<news::Newsgroup> list_newsgroup();
+        std::vector<std::pair<int, std::string>> list_newsgroup();
 	
         bool exists(std::string);
         news::Newsgroup* get(unsigned int); 
