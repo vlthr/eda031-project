@@ -67,12 +67,26 @@ int main(int argc, char* argv[]){
             write_ans_list_ng(conn, ngs);
           }
           break;
-        case Protocol::COM_CREATE_NG:
+        case Protocol::COM_CREATE_NG:{
+          std::string name = read_com_create_ng(conn);
+          if (db.add_newsgroup(name)){
+            write_ack(conn, Protocol::ANS_CREATE_NG);
+          } else {
+            write_nak(conn, Protocol::ANS_CREATE_NG, Protocol::ERR_NG_ALREADY_EXISTS);
+          }
           break;
+        }
         case Protocol::COM_DELETE_NG:
           break;
         case Protocol::COM_LIST_ART: {
           int ng_id = read_com_list_art(conn);
+          news::Newsgroup* ng = db.get(ng_id);
+          if (ng) {
+            const auto& articles = ng->to_list();
+            write_ans_list_art(conn, articles);
+          } else {
+            write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
+          }
           break;
         }
         case Protocol::COM_CREATE_ART: {

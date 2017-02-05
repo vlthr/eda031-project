@@ -138,7 +138,7 @@ void write_get_art(std::shared_ptr<Connection>& conn, int group_id, int article_
   conn->write(Protocol::COM_END);
 }
 
-void write_ans_get_art(std::shared_ptr<Connection>& conn, news::Article& art){
+void write_ans_get_art(std::shared_ptr<Connection>& conn, const news::Article& art){
   conn->write(Protocol::ANS_GET_ART);
   conn->write(Protocol::ANS_ACK);
   write_string_p(conn, art.title);
@@ -156,7 +156,7 @@ void read_com_list_ng(std::shared_ptr<Connection>& conn) {
   expect(conn, Protocol::COM_END);
 }
 
-void write_ans_list_ng(std::shared_ptr<Connection>& conn, std::vector<news::Newsgroup>& ngs) {
+void write_ans_list_ng(std::shared_ptr<Connection>& conn, const std::vector<news::Newsgroup>& ngs) {
   conn->write(Protocol::ANS_LIST_NG);
   write_num_p(conn, ngs.size());
   for (auto& ng : ngs){
@@ -208,14 +208,8 @@ std::string read_com_create_ng(std::shared_ptr<Connection>& conn) {
   return name;
 }
 
-void write_ans_create_ng(std::shared_ptr<Connection>& conn) {
-  conn->write(Protocol::ANS_CREATE_NG);
-  conn->write(Protocol::ANS_ACK);
-  conn->write(Protocol::ANS_END);
-}
-
-void read_ans_create_ng(std::shared_ptr<Connection>& conn) {
-  expect(conn, Protocol::ANS_CREATE_NG);
+void read_ack(std::shared_ptr<Connection>& conn, int expectType) {
+  expect(conn, expectType);
   int type = conn->read();
   switch (type){
   case Protocol::ANS_ACK:
@@ -241,26 +235,6 @@ int read_com_delete_ng(std::shared_ptr<Connection>& conn) {
   return id;
 }
 
-void write_ans_delete_ng(std::shared_ptr<Connection>& conn) {
-  conn->write(Protocol::ANS_DELETE_NG);
-  conn->write(Protocol::ANS_ACK);
-  conn->write(Protocol::ANS_END);
-}
-
-void read_ans_delete_ng(std::shared_ptr<Connection>& conn) {
-  expect(conn, Protocol::ANS_DELETE_NG);
-  int type = conn->read();
-  switch (type){
-  case Protocol::ANS_ACK:
-    break;
-  case Protocol::ANS_NAK:
-    int errType = conn->read();
-    protocol_error(errType);
-    break;
-  }
-  expect(conn, Protocol::ANS_END);
-}
-
 void write_com_list_art(std::shared_ptr<Connection>& conn, int ng_id) {
   conn->write(Protocol::COM_LIST_ART);
   write_num_p(conn, ng_id);
@@ -273,8 +247,8 @@ int read_com_list_art(std::shared_ptr<Connection>& conn) {
   return ng_id;
 }
 
-void write_ans_list_art(std::shared_ptr<Connection>& conn, std::vector<news::Article>& articles) {
-  conn->write(Protocol::ANS_DELETE_NG);
+void write_ans_list_art(std::shared_ptr<Connection>& conn, const std::vector<news::Article>& articles) {
+  conn->write(Protocol::ANS_LIST_ART);
   conn->write(Protocol::ANS_ACK);
   write_num_p(conn, articles.size());
   for (auto& article : articles){
@@ -292,7 +266,7 @@ void write_nak(std::shared_ptr<Connection>& conn,int ans_type, int err_type) {
 }
 
 std::vector<std::pair<int, std::string>> read_ans_list_art(std::shared_ptr<Connection>& conn) {
-  expect(conn, Protocol::ANS_DELETE_NG);
+  expect(conn, Protocol::ANS_LIST_ART);
   int type = conn->read();
   std::vector<std::pair<int, std::string>> arts;
   switch (type){
@@ -313,4 +287,28 @@ std::vector<std::pair<int, std::string>> read_ans_list_art(std::shared_ptr<Conne
   }
   expect(conn, Protocol::ANS_END);
   return arts;
+}
+
+void write_com_create_art(std::shared_ptr<Connection>& conn, int ng_id, std::string& title, std::string& author, std::string& text) {
+  conn->write(Protocol::COM_CREATE_ART);
+  write_num_p(conn, ng_id);
+  write_string_p(conn, title);
+  write_string_p(conn, author);
+  write_string_p(conn, text);
+  conn->write(Protocol::COM_END);
+}
+
+std::tuple<int, std::string, std::string, std::string> read_com_create_art(std::shared_ptr<Connection>& conn) {
+  int ng_id = read_num_p(conn);
+  std::string title = read_string_p(conn);
+  std::string author = read_string_p(conn);
+  std::string text = read_string_p(conn);
+  expect(conn, Protocol::COM_END);
+  return std::make_tuple(ng_id, title, author, text);
+}
+
+void write_ack(std::shared_ptr<Connection>& conn, int type) {
+  conn->write(type);
+  conn->write(Protocol::ANS_ACK);
+  conn->write(Protocol::ANS_END);
 }
