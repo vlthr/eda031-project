@@ -31,12 +31,48 @@ int main(int argc, char* argv[]) {
 	}
 
 	cout << "Sending ls...\n";
+  int command = Protocol::COM_LIST_NG;
   try {
-    write_com_list_ng(conn);
-    conn->read();
-    std::vector<news::Newsgroup> ngs = read_ans_list_ng(conn);
-    for (auto& x : ngs){
-      std::cout << x.name << std::endl;
+    switch (command) {
+    case Protocol::COM_LIST_NG: {
+      write_com_list_ng(conn);
+      conn->read();
+      std::vector<news::Newsgroup> ngs = read_ans_list_ng(conn);
+      for (auto& x : ngs){
+        std::cout << x.name << std::endl;
+      }
+      break;
+    }
+    case Protocol::COM_CREATE_NG:{
+      std::string name = "new ng";
+      write_com_create_ng(conn, name);
+      read_ans_create_ng(conn);
+      break;
+    }
+    case Protocol::COM_DELETE_NG: {
+      int id = 1;
+      write_com_delete_ng(conn, id);
+      read_ans_delete_ng(conn);
+      break;
+    }
+    case Protocol::COM_LIST_ART: {
+      int ng_id = 1;
+      write_com_list_art(conn, ng_id);
+      auto arts = read_ans_list_art(conn);
+      for (auto& pair : arts) {
+        std::cout << pair.first << ": " << pair.second << std::endl;
+      }
+      break;
+    }
+    case Protocol::COM_CREATE_ART: {
+      break;
+    }
+    case Protocol::COM_DELETE_ART: {
+      break;
+    }
+    case Protocol::COM_GET_ART: {
+      break;
+    }
     }
   }
   catch (const ProtocolException& p){
