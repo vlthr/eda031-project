@@ -9,7 +9,7 @@
 #include <sstream>
 #include "sqldb.h"
 void printInfo(){
-    std::cout << "1 Create grp \n2 Delete grp \n3 List grp \n4 Create Article\n5 Exists \n6 Delete Article \n7 List Articles \n8 Get Article\n0 Clear Database" << std::endl;
+    std::cout << "1 Create grp \n2 Delete grp \n3 List grp \n4 Create Article\n5 Exists \n6 Delete Article \n7 List Articles \n8 Get Article\n9 Clear Database\n0 Exit" << std::endl;
     std::cout << "----------------------------------------------\nDatabase$ ";
 }
 void printAction(int cmd){
@@ -27,7 +27,14 @@ int readInt(){
 void linebreak(){
     std::cout << "==============================================\n" << std::endl;
 }
+void printResult(bool b){
+    if(b){
+        std::cout << "Success" << std::endl;
+    }else{
 
+        std::cout << "Failure" << std::endl;
+    }
+}
 int main(){
     Sqldb *sqldb = new Sqldb("Database.db");
     int cmd;
@@ -37,9 +44,8 @@ int main(){
     while((cmd = readInt())){ 
         linebreak();
         printAction(cmd);
-
         switch(cmd){
-            case 0:
+            case 9:
                 std::cout << "Clearing Database" << std::endl;
                 system("cp Database.template Database.db");
                 delete sqldb;
@@ -58,7 +64,7 @@ int main(){
 
                     std::cout << "Enter id" << std::endl;
                     int id = readInt();
-                    sqldb->delete_newsgroup(id);
+                    printResult(sqldb->delete_newsgroup(id));
                 }
                 break;
             case 3:
@@ -83,10 +89,10 @@ int main(){
                     int id = readInt();
                     bool res = sqldb->create_article(id, title, author, content);
                     if(res){
-                        std::cout << "Article Succesfully created" << res << std::endl;
+                        std::cout << "Article Succesfully created"  << std::endl;
                     }else{
 
-                        std::cout << "Failed to Create Article" << res << std::endl;
+                        std::cout << "Failed to Create Article, most likely invalid newsgroup." << std::endl;
                     }
                 }
 
@@ -113,7 +119,7 @@ int main(){
                     int ng_id = readInt();
                     std::cout << "Enter art id " << std::endl;
                     int art_id = readInt();
-                     sqldb->delete_article(ng_id, art_id);
+                    printResult(sqldb->delete_article(ng_id, art_id) );
                 }
 
                 break;
