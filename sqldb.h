@@ -17,11 +17,11 @@ public:
         bool exists(std::string);
         bool exists(int ng_id);
         bool create_newsgroup(std::string name);
-        bool delete_newsgroup(int id);
+        void delete_newsgroup(int id);
 
         news::Article get_article(int ng_id, int article_id);
         bool create_article(int ng_id, std::string title,std::string author, std::string text);
-        bool delete_article(int ng_id, int article_id);
+        void delete_article(int ng_id, int article_id);
         void sort();
 
 

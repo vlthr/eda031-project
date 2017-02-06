@@ -20,28 +20,25 @@ static int flip(void *data, int argc, char **argv, char **azColName){
 }
 
 static int callbackArticle(void *data, int argc, char **argv, char **azColName){
+
+    std::cout.flush();
     std::string title    =       argv[0];
     std::string author   =       argv[1];
     std::string content  =       argv[2];
     std::string id       =       argv[3];
-    data = new news::Article(title, author, content, std::stoi(id));
+    //news::Article** temp = (news::Article**)data;
+    //*art = new news::Article(title, author, content, std::stoi(id));
+    news::Article* art = (news::Article*)data;
+    *art = news::Article(title, author, content, std::stoi(id));
     return 0;
 }
 static int callbackArticleList(void *data, int argc, char **argv, char **azColName){
+
     std::string title    =       argv[0];
     std::string author   =       argv[1];
     std::string content  =       argv[2];
     std::string id       =       argv[3];
-    //articledata+=argv[1]; // Title
-    //articledata+="\n";
-    //articledata+=argv[2]; // Author
-    //articledata+="\n";
-    //articledata+=argv[3]; //Content
-    //articledata+="\n";
-    //articledata+=argv[0]; // ID
-    //std::istringstream ss(articledata);
     news::Article art(title, author, content, std::stoi(id));
-    //ss >> art;
     std::vector<news::Article>* grp = (std::vector<news::Article>*)data;
     grp->push_back(art);
     return 0;
@@ -101,16 +98,15 @@ std::vector<std::pair<int, std::string>> Sqldb::list_newsgroups(){
 std::vector<news::Article> Sqldb::list_articles(int ng_id){
     char *zErrMsg = 0;
     int rc;
-    std::vector<news::Article>* data = nullptr;
-
+    std::vector<news::Article>* data = new std::vector<news::Article>();
+    if(!exists(ng_id)){
+        throw std::invalid_argument("Newsgroup doesnt exist");
+    }
     /* Create SQL statement  */
 
     std::string sql = "SELECT author, title, content, rowid FROM articles WHERE newsgroup=(SELECT name FROM newsgroups ng WHERE ng.rowid="+std::to_string(ng_id)+");";
-    /* Execute SQL statement */
     rc = sqlite3_exec(db, sql.c_str(), callbackArticleList, (void*)data, &zErrMsg);
-    if(data == nullptr){
-        throw std::invalid_argument("Unknown nesgroup_id...");
-    }
+    /* Execute SQL statement */
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
@@ -152,31 +148,30 @@ bool Sqldb::create_newsgroup(std::string name){
     }
 }
 
-bool Sqldb::delete_newsgroup(int id){
+void Sqldb::delete_newsgroup(int id){
     const char *zErrMsg = "Failed to delete newsgroup ";
     int rc;
-    std::vector<std::pair<int, std::string>>* data = new std::vector<std::pair<int, std::string>>();
-
     /* Create SQL statement  */
     std::string sql = "DELETE FROM newsgroups WHERE rowid = "+std::to_string(id);
+    
 
     /* Execute SQL statement */
-    rc = sqlite3_exec(db, sql.c_str(), empty, (void*)data, nullptr);
+    rc = sqlite3_exec(db, sql.c_str(), empty, (void*)0, nullptr);
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        return false;
     }else{ 
+
+        fprintf(stderr, "ERRMSG: %s\n", zErrMsg);
         fprintf(stdout, "Operation done successfully\n");
-        id_ctr++;
-        return true;
     }
 }
 
 bool Sqldb::create_article(int ng_id, std::string title,std::string author, std::string text){
     const char *zErrMsg = "Failed to create article ";
     int rc;
-    std::vector<std::pair<int, std::string>>* data = new std::vector<std::pair<int, std::string>>();
     /* Create SQL statement  */
+    bool val = false;
+    bool* data = &val;
     std::time_t t = time(0);
     long long created = t;
     std::string sql = "INSERT INTO articles VALUES('"+
@@ -185,7 +180,8 @@ bool Sqldb::create_article(int ng_id, std::string title,std::string author, std:
         std::to_string(ng_id)+")," +
         std::to_string(created) +");";
     /* Execute SQL statement */
-    rc = sqlite3_exec(db, sql.c_str(), empty, (void*)data, nullptr);
+    rc = sqlite3_exec(db, sql.c_str(), flip, (void*)data, nullptr);
+
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         return false;
@@ -196,26 +192,20 @@ bool Sqldb::create_article(int ng_id, std::string title,std::string author, std:
     }
 }
 
-bool Sqldb::delete_article(int ng_id, int article_id){
+void Sqldb::delete_article(int ng_id, int article_id){
     const char *zErrMsg = "Failed to create article ";
     int rc;
-    bool val = false;
-    bool* data = &val;
     /* Create SQL statement  */
-    if(!Sqldb::exists(ng_id)){
-        return false; 
-    }
     std::string sql = "DELETE FROM articles WHERE rowid="+std::to_string(article_id)+
         " AND newsgroup=(SELECT name FROM newsgroups ng WHERE ng.rowid="+std::to_string(ng_id)+");";
 
     /* Execute SQL statement */
-    rc = sqlite3_exec(db, sql.c_str(), flip, (void*)data, nullptr);
+    rc = sqlite3_exec(db, sql.c_str(), empty, 0, nullptr);
+
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        return false;
     }else{ 
         fprintf(stdout, "Operation done successfully\n");
-        return *data;
     }
 }
 bool Sqldb::exists(std::string name){
@@ -260,20 +250,26 @@ void Sqldb::sort(){
 news::Article Sqldb::get_article(int ng_id, int article_id){
     const char *zErrMsg = "Failed to get article ";
     int rc;
-    news::Article* data;
+    news::Article* data = new news::Article("Invalid","Invalid","Invalid",-1);
     /* Create SQL statement  */
 
-    std::string sql = "SELECT title, author, content, rowid FROM newsgroups WHERE rowid="+
-        std::to_string(article_id)+" AND newsgroup="+
-        std::to_string(ng_id)+";";
+    std::string sql = "SELECT title, author, content, rowid FROM articles WHERE rowid="+std::to_string(article_id)+" AND newsgroup=(SELECT name FROM newsgroups ng WHERE ng.rowid="+std::to_string(ng_id)+");";
+    //std::cout << sql << std::endl;
     /* Execute SQL statement */
-    rc = sqlite3_exec(db, sql.c_str(), flip, (void*)data, nullptr);
+    //std::cout << " Before casting " << std::endl;
+    rc = sqlite3_exec(db, sql.c_str(), callbackArticle, (void*)data, nullptr);
+    if((data->id == -1)){
+        throw std::invalid_argument("Couldnt find...");
+    }
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         throw std::invalid_argument("Unknown article_id...");
     }else{ 
         fprintf(stdout, "Operation done successfully\n");
-        return *data;
+
+        news::Article copy= *data;
+        delete data;
+        return copy;
     }
 
 }

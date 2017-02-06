@@ -15,6 +15,15 @@ void printInfo(){
 void printAction(int cmd){
     std::cout << cmd << " selected " << std::endl;
 }
+int readInt(){
+    int a;
+    if(std::cin >> a){
+        std::cin.ignore(100000, '\n');
+        return a;
+    }else{
+        throw std::invalid_argument("Invalid Input Type");
+    }
+}
 void linebreak(){
     std::cout << "==============================================\n" << std::endl;
 }
@@ -25,7 +34,7 @@ int main(){
     printInfo();
 
 
-    while(std::cin >> cmd){ 
+    while((cmd = readInt())){ 
         linebreak();
         printAction(cmd);
 
@@ -39,8 +48,8 @@ int main(){
             case 1:
                 {
                     std::cout << "Enter name" << std::endl;
-                    std::string n = "";
-                    std::cin >> n;
+                    std::string n; 
+                    std::getline(std::cin, n);
                     sqldb->create_newsgroup(n);
                 }
                 break;
@@ -48,8 +57,7 @@ int main(){
                 {
 
                     std::cout << "Enter id" << std::endl;
-                    int id;
-                    std::cin >> id;
+                    int id = readInt();
                     sqldb->delete_newsgroup(id);
                 }
                 break;
@@ -65,15 +73,14 @@ int main(){
             case 4:
                 {
                     std::string title, author, content;
-                    int id;
                     std::cout << "Enter title " << std::endl;
-                    std::cin >> title;
+                    std::getline(std::cin, title);
                     std::cout << "Enter author " << std::endl;
-                    std::cin >> author;
+                    std::getline(std::cin, author);
                     std::cout << "Enter content " << std::endl;
-                    std::cin >> content;
+                    std::getline(std::cin, content);
                     std::cout << "Enter newsgroup ID " << std::endl;
-                    std::cin >> id;
+                    int id = readInt();
                     bool res = sqldb->create_article(id, title, author, content);
                     if(res){
                         std::cout << "Article Succesfully created" << res << std::endl;
@@ -90,7 +97,7 @@ int main(){
 
                     std::cout << "Enter name of newsgroup" <<  std::endl;
                     std::string k;
-                    std::cin >> k;
+                    std::getline(std::cin, k);
                     if( sqldb->exists(k)){
                         std::cout<< "Group found" << std::endl;
                     }else{
@@ -103,29 +110,24 @@ int main(){
             case 6:
                 {
                     std::cout << "Enter newsgrp id " << std::endl;
-                    int ng_id;
-                    std::cin >> ng_id;
-
-
+                    int ng_id = readInt();
                     std::cout << "Enter art id " << std::endl;
-                    int art_id;
-                    std::cin >> art_id;
-                    std::cout << sqldb->delete_article(ng_id, art_id);
+                    int art_id = readInt();
+                     sqldb->delete_article(ng_id, art_id);
                 }
 
                 break;
             case 7:
                 {
                     std::cout << "Enter newsgroup to list articles from " << std::endl;
-                    int ng;
-                    std::cin >> ng;
+                    int ng = readInt();
                     try{
                         std::vector<news::Article> ls = sqldb->list_articles(ng);
                         for(news::Article a: ls){
                             std::cout << "Id: " <<a.id << "\nAuth: " << a.author << "\nTitle: " << a.title << "\nContent:\n" << a.content << std::endl;
                         }
                     }catch(const std::invalid_argument& ia){
-                        std::cout << "No such newsgroup"<< std::endl;
+                        std::cout << "No such grp"<< std::endl;
 
                     }
 
@@ -134,14 +136,11 @@ int main(){
             case 8:
                 {
                     std::cout << "Enter newsgroup id " << std::endl;
-                    int a_id;
-                    std::cin >> a_id;
+                    int a_id = readInt();
                     std::cout << "Enter article id " << std::endl;
-                    int ng;
-                    std::cin >> ng;
+                    int ng = readInt();
                     news::Article a = sqldb->get_article(a_id, ng);
                     std::cout << "Id: " <<a.id << "\nAuth: " << a.author << "\nTitle: " << a.title << "\nContent:\n" << a.content << std::endl;
-
 
                 }
                 break;
