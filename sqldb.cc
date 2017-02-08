@@ -67,7 +67,12 @@ Sqldb::Sqldb(std::string fn="Database.db"){
     if(rc){
         fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
     }else{
+    std::string sql = "PRAGMA foreign_keys=on;";  
+    /* Execute SQL statement */
+    sqlite3_exec(db, sql.c_str(), empty, 0, nullptr);
+    
         fprintf(stderr, "Opened database successfully\n");
+
     }
 }
 
@@ -87,11 +92,13 @@ std::vector<std::pair<int, std::string>> Sqldb::list_newsgroups(){
     std::vector<std::pair<int, std::string>>* data = new std::vector<std::pair<int, std::string>>();
 
     /* Create SQL statement  */
-    std::string sql = "SELECT rowid,name FROM newsgroups";  
+    std::string sql = "SELECT rowid,name FROM newsgroups ORDER BY created";  
     /* Execute SQL statement */
     rc = sqlite3_exec(db, sql.c_str(), callbackNewsgroup, (void*)data, nullptr);
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
+
         // sqlite3_free(zErrMsg); // Is this a good idea?
     }
     return *data;
@@ -107,12 +114,13 @@ std::vector<news::Article> Sqldb::list_articles(int ng_id){
     }
     /* Create SQL statement  */
 
-    std::string sql = "SELECT author, title, content, rowid FROM articles WHERE newsgroup=(SELECT name FROM newsgroups ng WHERE ng.rowid="+std::to_string(ng_id)+");";
+    std::string sql = "SELECT author, title, content, rowid FROM articles WHERE newsgroup=(SELECT name FROM newsgroups ng WHERE ng.rowid="+std::to_string(ng_id)+") ORDER BY created;";
     rc = sqlite3_exec(db, sql.c_str(), callbackArticleList, (void*)data, &zErrMsg);
     /* Execute SQL statement */
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
+        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
 
 
     }
@@ -142,10 +150,10 @@ bool Sqldb::create_newsgroup(std::string name){
     rc = sqlite3_exec(db, sql.c_str(), nullptr, (void*)data, nullptr);
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        return false;
-    }else{ 
-        return true;
+        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
     }
+        return true;
+    
 }
 
 bool Sqldb::delete_newsgroup(int ng_id){
@@ -157,11 +165,6 @@ bool Sqldb::delete_newsgroup(int ng_id){
     /* Create SQL statement  */
     std::string sql = "DELETE FROM newsgroups WHERE rowid = "+std::to_string(ng_id);
 
-    for(news::Article art: list_articles(ng_id)){
-        if(!delete_article(ng_id, art.id)){
-            throw std::invalid_argument("Error halfway through deletion, check database");
-        }
-    }
     int before = count_newsgroups();
     /* Execute SQL statement */
     rc = sqlite3_exec(db, sql.c_str(), empty, (void*)0, nullptr);
@@ -169,6 +172,7 @@ bool Sqldb::delete_newsgroup(int ng_id){
 
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
     } 
     return before > after;
 }
@@ -223,9 +227,7 @@ bool Sqldb::create_article(int ng_id, std::string title,std::string author, std:
 
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        return false;
-    }else{ 
-        return true;
+        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
     }
 }
 
@@ -246,6 +248,7 @@ bool Sqldb::delete_article(int ng_id, int article_id){
     int after = count_articles(ng_id);
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
     } 
         return before>after;
     
@@ -261,11 +264,10 @@ bool Sqldb::exists(std::string name){
     rc = sqlite3_exec(db, sql.c_str(), flip, (void*)data, nullptr);
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-
-        return false;
-    }else{ 
+        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
+    } 
         return *data;
-    }
+    
 }
 bool Sqldb::exists(int ng_id){
     const char *zErrMsg = "Failed to create article ";
@@ -278,10 +280,10 @@ bool Sqldb::exists(int ng_id){
     rc = sqlite3_exec(db, sql.c_str(), flip, (void*)data, nullptr);
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        return false;
-    }else{ 
-        return *data;
+        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
     }
+        return *data;
+    
 }
 
 
