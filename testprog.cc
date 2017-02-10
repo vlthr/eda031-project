@@ -36,7 +36,9 @@ void printResult(bool b){
     }
 }
 int main(){
-    Sqldb *sqldb = new Sqldb("Database.db");
+    //Sqldb *sqldb = new Sqldb("Database.db");
+    Database *sqldb = new Database();
+    
     int cmd;
     printInfo();
 
@@ -47,9 +49,10 @@ int main(){
         switch(cmd){
             case 9:
                 std::cout << "Clearing Database" << std::endl;
-                system("cp Database.template Database.db");
+                //system("cp Database.template Database.db");
                 delete sqldb;
-                sqldb = new Sqldb("Database.db");
+             //   sqldb = new Sqldb("Database.db");
+                sqldb = new Database();
                 break;
             case 1:
                 {

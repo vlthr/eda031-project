@@ -1,6 +1,7 @@
 #include "database.h"
 #include "news.h"
 #include <iostream>
+#include <vector>
 #include <algorithm>
 #include <ctime>
 #include <stdexcept>
@@ -58,9 +59,25 @@ bool Database::create_article(int ng_id, std::string title,std::string author, s
   }
   return false;
 }
-bool delete_article(int ng_id, int article_id) {
-  return true;
+bool Database::delete_article(int ng_id, int art_id) {
+    auto ng = std::find(newsgroups.begin(), newsgroups.end(), ng_id);
+    if(ng == newsgroups.end()){
+        return false;
+
+    }
+    std::vector<news::Article> artlist = ng->to_list();
+    std::vector<news::Article>::iterator it = artlist.begin();
+
+    while(it != artlist.end()){
+        if(it->id == art_id){
+            it = artlist.erase(it);
+            return true;
+        }
+        ++it;
+    }
+    return false;
 }
+
 
 bool Database::exists(std::string name){
     for(auto n: newsgroups){

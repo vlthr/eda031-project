@@ -12,7 +12,7 @@ news::Newsgroup::~Newsgroup(){
     articles.clear();
 }
 
-std::vector<news::Article> news::Newsgroup::to_list(){
+std::vector<news::Article>& news::Newsgroup::to_list(){
     return articles;
 }
 

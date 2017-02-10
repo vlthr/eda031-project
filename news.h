@@ -48,7 +48,7 @@ namespace news{
              * @return: articles listed in current order
              */
 
-            std::vector<Article> to_list();
+            std::vector<Article>& to_list();
 
             /* delete an article
              * @param: id of article to be deleted 
