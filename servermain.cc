@@ -5,6 +5,7 @@
 #include "database.h"
 #include "news.h"
 #include "protocol.h"
+#include "protocolexception.h"
 
 #include <memory>
 #include <iostream>
@@ -90,12 +91,27 @@ int main(int argc, char* argv[]){
           break;
         }
         case Protocol::COM_CREATE_ART: {
+          auto art = read_com_create_art(conn);
+          bool created = db.create_article(std::get<0>(art), std::get<1>(art), std::get<2>(art),std::get<3>(art));
+          if (created) {
+            write_ack(conn, Protocol::ANS_CREATE_ART);
+          } else {
+            write_nak(conn, Protocol::ANS_CREATE_ART,Protocol::ERR_ART_DOES_NOT_EXIST);
+          }
           break;
         }
         case Protocol::COM_DELETE_ART: {
+          auto art = read_com_delete_art(conn);
+          bool deleted = db.delete_article(std::get<0>(art), std::get<1>(art));
+          if (deleted) {
+            write_ack(conn, Protocol::ANS_DELETE_ART);
+          } else {
+            write_nak(conn, Protocol::ANS_DELETE_ART,Protocol::ERR_ART_DOES_NOT_EXIST);
+          }
           break;
         }
         case Protocol::COM_GET_ART:{
+          //read_com_get_art(conn);
           break;
         }
         default: {

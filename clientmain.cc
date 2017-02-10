@@ -99,9 +99,23 @@ int main(int argc, char* argv[]) {
         break;
       }
       case Protocol::COM_DELETE_ART: {
+        int ng_id;
+        int art_id;
+        std::cout << "Newsgroup ID: ";
+        std::cin >> ng_id;
+        std::cout << "Article ID: ";
+        std::cin >> art_id;
+        write_com_delete_art(conn, ng_id, art_id);
         break;
       }
       case Protocol::COM_GET_ART: {
+        int ng_id;
+        int art_id;
+        std::cout << "Newsgroup ID: ";
+        std::cin >> ng_id;
+        std::cout << "Article ID: ";
+        std::cin >> art_id;
+        write_com_get_art(conn, ng_id, art_id);
         break;
       }
       default:

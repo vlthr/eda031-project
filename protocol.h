@@ -53,14 +53,13 @@ void write_num_p(std::shared_ptr<Connection>& conn, int num);
 int read_num_p(std::shared_ptr<Connection>& conn);
 void write_string_p(std::shared_ptr<Connection>& conn, std::string str);
 std::string read_string_p(std::shared_ptr<Connection>& conn);
-void write_get_art(std::shared_ptr<Connection>& conn, int group_id, int article_id);
-void write_ans_get_art(std::shared_ptr<Connection>& conn, const news::Article& art);
-news::Article read_ans_get_art(std::shared_ptr<Connection>& conn);
+void write_com_get_art(std::shared_ptr<Connection>& conn, int group_id, int article_id);
+void write_ans_get_art(std::shared_ptr<Connection>& conn, const std::tuple<std::string, std::string, std::string>& art);
+std::tuple<std::string, std::string, std::string> read_ans_get_art(std::shared_ptr<Connection>& conn);
 void write_com_list_ng(std::shared_ptr<Connection>& conn);
 void read_com_list_ng(std::shared_ptr<Connection>& conn);
 void write_ans_list_ng(std::shared_ptr<Connection>& conn, const std::vector<std::pair<int, std::string>>& pairs);
 std::vector<news::Newsgroup> read_ans_list_ng(std::shared_ptr<Connection>& conn);
-news::Article read_ans_get_art(std::shared_ptr<Connection>& conn);
 void write_com_create_ng(std::shared_ptr<Connection>& conn, std::string& name);
 std::string read_com_create_ng(std::shared_ptr<Connection>& conn);
 void write_com_delete_ng(std::shared_ptr<Connection>& conn, int id);
@@ -74,4 +73,6 @@ std::vector<std::pair<int, std::string>> read_ans_list_art(std::shared_ptr<Conne
 void read_ack(std::shared_ptr<Connection>& conn, int expectType);
 void write_com_create_art(std::shared_ptr<Connection>& conn, int ng_id, std::string& title, std::string& author, std::string& text);
 std::tuple<int, std::string, std::string, std::string> read_com_create_art(std::shared_ptr<Connection>& conn);
+void write_com_delete_art(std::shared_ptr<Connection>& conn, int ng_id, int art_id);
+std::tuple<int, int> read_com_delete_art(std::shared_ptr<Connection>& conn);
 #endif

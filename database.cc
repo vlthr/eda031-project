@@ -15,6 +15,7 @@ std::vector<std::pair<int, std::string>> Database::list_newsgroups() {
     }
     return pairs;
 }
+
 bool Database::create_newsgroup(std::string name){
     if(exists(name)) return false;
     auto before = newsgroups.size();
@@ -67,7 +68,6 @@ bool Database::delete_article(int ng_id, int art_id) {
     }
     std::vector<news::Article> artlist = ng->to_list();
     std::vector<news::Article>::iterator it = artlist.begin();
-
     while(it != artlist.end()){
         if(it->id == art_id){
             it = artlist.erase(it);
