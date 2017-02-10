@@ -14,6 +14,7 @@ std::vector<std::pair<int, std::string>> Database::list_newsgroups() {
     }
     return pairs;
 }
+
 bool Database::create_newsgroup(std::string name){
     if(exists(name)) return false;
     auto before = newsgroups.size();
@@ -58,8 +59,15 @@ bool Database::create_article(int ng_id, std::string title,std::string author, s
   }
   return false;
 }
-bool delete_article(int ng_id, int article_id) {
-  return true;
+
+bool Database::delete_article(int ng_id, int article_id) {
+  for (int i = 0; i < newsgroups.size(); ++i) {
+    news::Newsgroup& ng = newsgroups.at(i);
+    if (ng.id == ng_id) {
+      return ng.del(article_id);
+    }
+  }
+  return false;
 }
 
 bool Database::exists(std::string name){

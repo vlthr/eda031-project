@@ -131,19 +131,26 @@ std::string read_string_p(std::shared_ptr<Connection>& conn){
   return ss.str();
 }
 
-void write_get_art(std::shared_ptr<Connection>& conn, int group_id, int article_id){
+void write_com_get_art(std::shared_ptr<Connection>& conn, int group_id, int article_id){
   conn->write(Protocol::COM_GET_ART);
   write_num_p(conn, group_id);
   write_num_p(conn, article_id);
   conn->write(Protocol::COM_END);
 }
 
-void write_ans_get_art(std::shared_ptr<Connection>& conn, const news::Article& art){
+void read_com_get_art(std::shared_ptr<Connection>& conn, int group_id, int article_id){
+  conn->write(Protocol::COM_GET_ART);
+  write_num_p(conn, group_id);
+  write_num_p(conn, article_id);
+  conn->write(Protocol::COM_END);
+}
+
+void write_ans_get_art(std::shared_ptr<Connection>& conn, const std::tuple<std::string, std::string, std::string>& art){
   conn->write(Protocol::ANS_GET_ART);
   conn->write(Protocol::ANS_ACK);
-  write_string_p(conn, art.title);
-  write_string_p(conn, art.author);
-  write_string_p(conn, art.content);
+  write_string_p(conn, std::get<0>(art));
+  write_string_p(conn, std::get<1>(art));
+  write_string_p(conn, std::get<2>(art));
   conn->write(Protocol::ANS_END);
 }
 
@@ -179,13 +186,14 @@ std::vector<news::Newsgroup> read_ans_list_ng(std::shared_ptr<Connection>& conn)
   return ngs;
 }
 
-news::Article read_ans_get_art(std::shared_ptr<Connection>& conn) {
+std::tuple<std::string, std::string, std::string> read_ans_get_art(std::shared_ptr<Connection>& conn) {
   int type = conn->read();
-  news::Article art;
+  std::tuple<std::string, std::string, std::string> art;
   if (type == Protocol::ANS_ACK) {
-    art.title = read_string_p(conn);
-    art.author = read_string_p(conn);
-    art.content = read_string_p(conn);
+    std::string title = read_string_p(conn);
+    std::string author = read_string_p(conn);
+    std::string content = read_string_p(conn);
+    art = make_tuple(title, author, content);
   }
   else {
     int errType = conn->read();
@@ -311,4 +319,18 @@ void write_ack(std::shared_ptr<Connection>& conn, int type) {
   conn->write(type);
   conn->write(Protocol::ANS_ACK);
   conn->write(Protocol::ANS_END);
+}
+
+void write_com_delete_art(std::shared_ptr<Connection>& conn, int ng_id, int art_id) {
+  conn->write(Protocol::COM_DELETE_ART);
+  write_num_p(conn, ng_id);
+  write_num_p(conn, ng_id);
+  conn->write(Protocol::COM_END);
+}
+
+std::tuple<int, int> read_com_delete_art(std::shared_ptr<Connection>& conn) {
+  int ng_id = read_num_p(conn);
+  int art_id = read_num_p(conn);
+  expect(conn, Protocol::COM_END);
+  return std::make_tuple(ng_id, art_id);
 }
