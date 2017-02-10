@@ -17,10 +17,9 @@
 
 void initialize_db(Database& db){
   news::Newsgroup n("a", 3, time(0));
-  db.create_newsgroup("std::yalla");
-  std::cout << n.add("title", "Author", "content") << std::endl;
-  std::cout << n.add("title1", "Author", "content") << std::endl;
-  std::cout << n.add("title2", "Author", "content") << std::endl;
+  db.create_newsgroup("SQL Jokes");
+  db.create_article(0, "A SQL Query walks into a bar.", "IT Guy", "In the corner of the bar are two tables. The query walks up to the tables and asks: Mind if I join you?");
+  db.create_article(0, "SELECT * FROM [Users] WHERE [CLUE] > 0", "", "No records found.");
   std::vector<news::Article> v = n.to_list();
 
   for(news::Article& a: v){
@@ -74,20 +73,24 @@ int main(int argc, char* argv[]){
           }
           break;
         }
-        case Protocol::COM_DELETE_NG:
+        case Protocol::COM_DELETE_NG: {
+          int ng_id = read_com_delete_ng(conn);
+          if (db.delete_newsgroup(ng_id)){
+            write_ack(conn, Protocol::ANS_DELETE_NG);
+          } else {
+            write_nak(conn, Protocol::ANS_DELETE_NG,Protocol::ERR_NG_DOES_NOT_EXIST);
+          }
           break;
+        }
         case Protocol::COM_LIST_ART: {
           int ng_id = read_com_list_art(conn);
           try {
-          std::vector<news::Article> articles = db.list_articles(ng_id);
+            std::vector<news::Article> articles = db.list_articles(ng_id);
             write_ans_list_art(conn, articles);
           }
-          catch (std::exception& e) {
+          catch (const std::invalid_argument& e) {
             write_nak(conn, Protocol::ANS_LIST_ART, Protocol::ERR_NG_DOES_NOT_EXIST);
           }
-          // if (ng) {
-          // } else {
-          // }
           break;
         }
         case Protocol::COM_CREATE_ART: {
@@ -96,7 +99,7 @@ int main(int argc, char* argv[]){
           if (created) {
             write_ack(conn, Protocol::ANS_CREATE_ART);
           } else {
-            write_nak(conn, Protocol::ANS_CREATE_ART,Protocol::ERR_ART_DOES_NOT_EXIST);
+            write_nak(conn, Protocol::ANS_CREATE_ART,Protocol::ERR_NG_DOES_NOT_EXIST);
           }
           break;
         }

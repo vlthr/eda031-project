@@ -24,7 +24,7 @@ void news::Newsgroup::sort(){
 bool news::Newsgroup::del(unsigned int id){
     auto before = articles.size();
     auto a = std::find_if(articles.begin(), articles.end(), [id] (const Article& art) { return art.id == id; });
-    articles.erase(a);
+    if (a != articles.end()) articles.erase(a);
     auto after = articles.size();
     return before != after;
 
@@ -39,7 +39,7 @@ news::Article* news::Newsgroup::get(unsigned int id){
 
 bool news::Newsgroup::add(std::string title, std::string author, std::string text){
   id_ctr++;
-  news::Article a(title, author, text, id);
+  news::Article a(title, author, text, id_ctr);
   articles.push_back(a);
   return true;
 }

@@ -61,19 +61,11 @@ bool Database::create_article(int ng_id, std::string title,std::string author, s
   return false;
 }
 bool Database::delete_article(int ng_id, int art_id) {
-    auto ng = std::find(newsgroups.begin(), newsgroups.end(), ng_id);
-    if(ng == newsgroups.end()){
-        return false;
-
-    }
-    std::vector<news::Article> artlist = ng->to_list();
-    std::vector<news::Article>::iterator it = artlist.begin();
-    while(it != artlist.end()){
-        if(it->id == art_id){
-            it = artlist.erase(it);
-            return true;
-        }
-        ++it;
+    for (int i = 0; i < newsgroups.size(); ++i) {
+      news::Newsgroup& ng = newsgroups.at(i);
+      if (ng.id == ng_id) {
+        return ng.del(art_id);
+      }
     }
     return false;
 }
@@ -92,7 +84,7 @@ void Database::sort(){
 std::vector<news::Article> Database::list_articles(int ng_id){
    auto a = std::find(newsgroups.begin(), newsgroups.end(), ng_id);
     if(a == newsgroups.end()){
-      throw new std::invalid_argument("Unknown ng_id...");
+      throw std::invalid_argument("Unknown ng_id...");
     }
     return (&*a)->to_list();
 }

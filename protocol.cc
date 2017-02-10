@@ -187,19 +187,21 @@ std::vector<news::Newsgroup> read_ans_list_ng(std::shared_ptr<Connection>& conn)
 }
 
 std::tuple<std::string, std::string, std::string> read_ans_get_art(std::shared_ptr<Connection>& conn) {
+  expect(conn, Protocol::ANS_GET_ART);
   int type = conn->read();
   std::tuple<std::string, std::string, std::string> art;
   if (type == Protocol::ANS_ACK) {
     std::string title = read_string_p(conn);
     std::string author = read_string_p(conn);
     std::string content = read_string_p(conn);
+    expect(conn, Protocol::ANS_END);
     art = make_tuple(title, author, content);
   }
   else {
     int errType = conn->read();
+    expect(conn, Protocol::ANS_END);
     protocol_error(errType);
   }
-  expect(conn, Protocol::ANS_END);
   return art;
 }
 
@@ -221,13 +223,14 @@ void read_ack(std::shared_ptr<Connection>& conn, int expectType) {
   int type = conn->read();
   switch (type){
   case Protocol::ANS_ACK:
+    expect(conn, Protocol::ANS_END);
     break;
   case Protocol::ANS_NAK:
     int errType = conn->read();
+    expect(conn, Protocol::ANS_END);
     protocol_error(errType);
     break;
   }
-  expect(conn, Protocol::ANS_END);
 }
 
 void write_com_delete_ng(std::shared_ptr<Connection>& conn, int id) {
@@ -285,15 +288,16 @@ std::vector<std::pair<int, std::string>> read_ans_list_art(std::shared_ptr<Conne
       std::string title = read_string_p(conn);
       arts.push_back(std::make_pair(id, title));
     }
+    expect(conn, Protocol::ANS_END);
     break;
   }
   case Protocol::ANS_NAK: {
     int errType = conn->read();
+    expect(conn, Protocol::ANS_END);
     protocol_error(errType);
     break;
   }
   }
-  expect(conn, Protocol::ANS_END);
   return arts;
 }
 

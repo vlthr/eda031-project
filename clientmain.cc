@@ -66,13 +66,17 @@ int main(int argc, char* argv[]) {
         break;
       }
       case Protocol::COM_DELETE_NG: {
-        int id = 1;
-        write_com_delete_ng(conn, id);
+        int ng_id;
+        std::cout << "Newsgroup ID: ";
+        std::cin >> ng_id;
+        write_com_delete_ng(conn, ng_id);
         read_ack(conn, Protocol::ANS_DELETE_NG);
         break;
       }
       case Protocol::COM_LIST_ART: {
-        int ng_id = 1;
+        int ng_id;
+        std::cout << "Newsgroup ID: ";
+        std::cin >> ng_id;
         write_com_list_art(conn, ng_id);
         auto arts = read_ans_list_art(conn);
         for (auto& pair : arts) {
@@ -106,6 +110,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Article ID: ";
         std::cin >> art_id;
         write_com_delete_art(conn, ng_id, art_id);
+        read_ack(conn, Protocol::ANS_DELETE_ART);
         break;
       }
       case Protocol::COM_GET_ART: {
@@ -116,6 +121,10 @@ int main(int argc, char* argv[]) {
         std::cout << "Article ID: ";
         std::cin >> art_id;
         write_com_get_art(conn, ng_id, art_id);
+        auto data = read_ans_get_art(conn);
+        std::cout << "Title: " << std::get<0>(data) << '\n';
+        std::cout << "Author: " << std::get<1>(data) << '\n';
+        std::cout << "Text: " << std::get<2>(data) << std::endl;
         break;
       }
       default:
