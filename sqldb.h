@@ -1,13 +1,13 @@
 #ifndef SQLDB_H
 #define SQLDB_H
 #include "news.h"
+#include "abstractdb.h"
 #include <list>
 #include <sqlite3.h>
 
-class Sqldb{
+class Sqldb: public Abstractdb{
 public:
 	Sqldb(std::string);
-
 	~Sqldb();
 	
         // returns a list with newsgroups in sorted order;
@@ -23,9 +23,6 @@ public:
         bool create_article(int ng_id, std::string title,std::string author, std::string text);
         bool delete_article(int ng_id, int article_id);
         void sort();
-
-
-	
 private:
         int count_articles(int ng);
         int count_newsgroups();

@@ -1,9 +1,10 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 #include "news.h"
+#include "abstractdb.h"
 #include <list>
 
-class Database{
+class Database: public Abstractdb{
  public:
   Database();
 

@@ -3,6 +3,7 @@
 #include "connection.h"
 #include "connectionclosedexception.h"
 #include "database.h"
+#include "abstractdb.h"
 #include "sqldb.h"
 #include "news.h"
 #include "protocol.h"
@@ -16,11 +17,14 @@
 #include <cstdlib>
 #include <memory>
 
-void initialize_db(Database& db){
+void initialize_db(Abstractdb *db){
   news::Newsgroup n("a", 3, time(0));
-  db.create_newsgroup("SQL Jokes");
-  db.create_article(0, "A SQL Query walks into a bar.", "IT Guy", "In the corner of the bar are two tables. The query walks up to the tables and asks: Mind if I join you?");
-  db.create_article(0, "SELECT * FROM [Users] WHERE [CLUE] > 0", "", "No records found.");
+  std::cout << "Before jokes";
+  db->create_newsgroup("SQL Jokes");
+
+  std::cout << "Afer jokes";
+  db->create_article(0, "A SQL Query walks into a bar.", "IT Guy", "In the corner of the bar are two tables. The query walks up to the tables and asks: Mind if I join you?");
+  db->create_article(0, "SELECT * FROM [Users] WHERE [CLUE] > 0", "", "No records found.");
   std::vector<news::Article> v = n.to_list();
 
   for(news::Article& a: v){
@@ -31,17 +35,19 @@ void initialize_db(Database& db){
     std::cout << a.id<<std::endl;
     //std::cout << "Title " + v.title + " Author " + v.author + " Content " + content << std::endl;
   }
-  std::cout << "Testing if newsgroup can be found : " << db.exists("std::yalla") << std::endl;
+  std::cout << "Testing if newsgroup can be found : " << db->exists("std::yalla") << std::endl;
 }
 
 int main(int argc, char* argv[]){
-  Sqldb db("Database.db");
+  //Sqldb db("Database.db");
   // Database db;
   // initialize_db(db);
-	if (argc != 2) {
-		std::cerr << "Usage: myserver port-number" << std::endl;
+	if (argc != 3) {
+		std::cerr << "Usage: myserver port-number <sql|in-memory>" << std::endl;
     exit(1);
 	}
+
+
 	int port = -1;
 	try {
 		port = std::stoi(argv[1]);
@@ -54,6 +60,18 @@ int main(int argc, char* argv[]){
 		std::cerr << "Server initialization error." << std::endl;
 		exit(1);
 	}
+        Abstractdb *db = nullptr;
+        std::string dbstr = argv[2];
+        if (dbstr == "sql"){
+            db = new Sqldb("Database.db");
+        }else if(dbstr == "in-memory"){
+
+            db = new Database();
+        }else{
+		std::cerr << "Invalid database type. Choose 'sql' or 'in-memory'. " <<std::endl;
+		exit(1);
+        }
+        //initialize_db(db);
 	while (true) {
 		auto conn = server.waitForActivity();
 		if (conn != nullptr) {
@@ -62,13 +80,13 @@ int main(int argc, char* argv[]){
         switch (type) {
         case Protocol::COM_LIST_NG: {
             read_com_list_ng(conn);
-            auto ngs = db.list_newsgroups();
+            auto ngs = db->list_newsgroups();
             write_ans_list_ng(conn, ngs);
           }
           break;
         case Protocol::COM_CREATE_NG:{
           std::string name = read_com_create_ng(conn);
-          if (db.create_newsgroup(name)){
+          if (db->create_newsgroup(name)){
             write_ack(conn, Protocol::ANS_CREATE_NG);
           } else {
             write_nak(conn, Protocol::ANS_CREATE_NG, Protocol::ERR_NG_ALREADY_EXISTS);
@@ -77,7 +95,7 @@ int main(int argc, char* argv[]){
         }
         case Protocol::COM_DELETE_NG: {
           int ng_id = read_com_delete_ng(conn);
-          if (db.delete_newsgroup(ng_id)){
+          if (db->delete_newsgroup(ng_id)){
             write_ack(conn, Protocol::ANS_DELETE_NG);
           } else {
             write_nak(conn, Protocol::ANS_DELETE_NG,Protocol::ERR_NG_DOES_NOT_EXIST);
@@ -87,7 +105,7 @@ int main(int argc, char* argv[]){
         case Protocol::COM_LIST_ART: {
           int ng_id = read_com_list_art(conn);
           try {
-            std::vector<news::Article> articles = db.list_articles(ng_id);
+            std::vector<news::Article> articles = db->list_articles(ng_id);
             write_ans_list_art(conn, articles);
           }
           catch (const std::invalid_argument& e) {
@@ -97,7 +115,7 @@ int main(int argc, char* argv[]){
         }
         case Protocol::COM_CREATE_ART: {
           auto art = read_com_create_art(conn);
-          bool created = db.create_article(std::get<0>(art), std::get<1>(art), std::get<2>(art),std::get<3>(art));
+          bool created = db->create_article(std::get<0>(art), std::get<1>(art), std::get<2>(art),std::get<3>(art));
           if (created) {
             write_ack(conn, Protocol::ANS_CREATE_ART);
           } else {
@@ -107,7 +125,7 @@ int main(int argc, char* argv[]){
         }
         case Protocol::COM_DELETE_ART: {
           auto art = read_com_delete_art(conn);
-          bool deleted = db.delete_article(std::get<0>(art), std::get<1>(art));
+          bool deleted = db->delete_article(std::get<0>(art), std::get<1>(art));
           if (deleted) {
             write_ack(conn, Protocol::ANS_DELETE_ART);
           } else {
@@ -118,7 +136,7 @@ int main(int argc, char* argv[]){
         case Protocol::COM_GET_ART:{
           auto request = read_com_get_art(conn);
           try {
-            auto art = db.get_article(request.first, request.second);
+            auto art = db->get_article(request.first, request.second);
             write_ans_get_art(conn, std::make_tuple(art.title, art.author, art.content));
           }
           catch (const std::invalid_argument& e) {
