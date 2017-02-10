@@ -111,7 +111,14 @@ int main(int argc, char* argv[]){
           break;
         }
         case Protocol::COM_GET_ART:{
-          //read_com_get_art(conn);
+          auto request = read_com_get_art(conn);
+          try {
+            auto art = db.get_article(request.first, request.second);
+            write_ans_get_art(conn, std::make_tuple(art.title, art.author, art.content));
+          }
+          catch (const std::invalid_argument& e) {
+            write_nak(conn, Protocol::ANS_GET_ART, Protocol::ERR_ART_DOES_NOT_EXIST);
+          }
           break;
         }
         default: {

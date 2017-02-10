@@ -138,11 +138,11 @@ void write_com_get_art(std::shared_ptr<Connection>& conn, int group_id, int arti
   conn->write(Protocol::COM_END);
 }
 
-void read_com_get_art(std::shared_ptr<Connection>& conn, int group_id, int article_id){
-  conn->write(Protocol::COM_GET_ART);
-  write_num_p(conn, group_id);
-  write_num_p(conn, article_id);
-  conn->write(Protocol::COM_END);
+std::pair<int, int> read_com_get_art(std::shared_ptr<Connection>& conn){
+  int ng_id = read_num_p(conn);
+  int art_id = read_num_p(conn);
+  expect(conn, Protocol::COM_END);
+  return std::make_pair(ng_id, art_id);
 }
 
 void write_ans_get_art(std::shared_ptr<Connection>& conn, const std::tuple<std::string, std::string, std::string>& art){
@@ -154,11 +154,11 @@ void write_ans_get_art(std::shared_ptr<Connection>& conn, const std::tuple<std::
   conn->write(Protocol::ANS_END);
 }
 
-
 void write_com_list_ng(std::shared_ptr<Connection>& conn) {
   conn->write(Protocol::COM_LIST_NG);
   conn->write(Protocol::COM_END);
 }
+
 void read_com_list_ng(std::shared_ptr<Connection>& conn) {
   expect(conn, Protocol::COM_END);
 }

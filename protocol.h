@@ -54,6 +54,7 @@ int read_num_p(std::shared_ptr<Connection>& conn);
 void write_string_p(std::shared_ptr<Connection>& conn, std::string str);
 std::string read_string_p(std::shared_ptr<Connection>& conn);
 void write_com_get_art(std::shared_ptr<Connection>& conn, int group_id, int article_id);
+std::pair<int, int> read_com_get_art(std::shared_ptr<Connection>& conn);
 void write_ans_get_art(std::shared_ptr<Connection>& conn, const std::tuple<std::string, std::string, std::string>& art);
 std::tuple<std::string, std::string, std::string> read_ans_get_art(std::shared_ptr<Connection>& conn);
 void write_com_list_ng(std::shared_ptr<Connection>& conn);
@@ -75,4 +76,5 @@ void write_com_create_art(std::shared_ptr<Connection>& conn, int ng_id, std::str
 std::tuple<int, std::string, std::string, std::string> read_com_create_art(std::shared_ptr<Connection>& conn);
 void write_com_delete_art(std::shared_ptr<Connection>& conn, int ng_id, int art_id);
 std::tuple<int, int> read_com_delete_art(std::shared_ptr<Connection>& conn);
+
 #endif
