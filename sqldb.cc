@@ -114,7 +114,7 @@ std::vector<news::Article> Sqldb::list_articles(int ng_id){
     }
     /* Create SQL statement  */
 
-    std::string sql = "SELECT author, title, content, rowid FROM articles WHERE newsgroup=(SELECT name FROM newsgroups ng WHERE ng.rowid="+std::to_string(ng_id)+") ORDER BY created;";
+    std::string sql = "SELECT title, author, content, rowid FROM articles WHERE newsgroup=(SELECT name FROM newsgroups ng WHERE ng.rowid="+std::to_string(ng_id)+") ORDER BY created;";
     rc = sqlite3_exec(db, sql.c_str(), callbackArticleList, (void*)data, &zErrMsg);
     /* Execute SQL statement */
     if( rc != SQLITE_OK ){
@@ -227,8 +227,9 @@ bool Sqldb::create_article(int ng_id, std::string title,std::string author, std:
 
     if( rc != SQLITE_OK ){
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        throw std::invalid_argument("Query failed " + std::string(zErrMsg));
+        return false;
     }
+    return true;
 }
 
 bool Sqldb::delete_article(int ng_id, int article_id){

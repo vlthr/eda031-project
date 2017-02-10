@@ -3,6 +3,7 @@
 #include "connection.h"
 #include "connectionclosedexception.h"
 #include "database.h"
+#include "sqldb.h"
 #include "news.h"
 #include "protocol.h"
 #include "protocolexception.h"
@@ -34,8 +35,9 @@ void initialize_db(Database& db){
 }
 
 int main(int argc, char* argv[]){
-  Database db;
-  initialize_db(db);
+  Sqldb db("Database.db");
+  // Database db;
+  // initialize_db(db);
 	if (argc != 2) {
 		std::cerr << "Usage: myserver port-number" << std::endl;
     exit(1);
