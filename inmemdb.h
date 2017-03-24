@@ -1,14 +1,14 @@
-#ifndef DATABASE_H
-#define DATABASE_H
+#ifndef INMEMDB_H
+#define INMEMDB_H
 #include "news.h"
 #include "abstractdb.h"
 #include <list>
 
-class Database: public Abstractdb{
+class Inmemdb: public Abstractdb{
  public:
-  Database();
+  Inmemdb();
 
-  ~Database();
+  ~Inmemdb();
 
   // returns a list with newsgroups in sorted order;
   std::vector<std::pair<int, std::string>> list_newsgroups();

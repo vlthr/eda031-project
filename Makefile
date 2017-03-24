@@ -29,11 +29,11 @@ libclientserver.a: connection.o server.o news.o protocol.o
 	ar rv libclientserver.a news.o connection.o server.o protocol.o
 	ranlib libclientserver.a
 
-testprog: news.o testprog.o libclientserver.a database.o sqldb.o
+testprog: news.o testprog.o libclientserver.a inmemdb.o sqldb.o
 
 clientmain: clientmain.o libclientserver.a
 
-servermain: servermain.o libclientserver.a database.o sqldb.o
+servermain: servermain.o libclientserver.a inmemdb.o sqldb.o
 
 # Phony targets
 .PHONY: all clean

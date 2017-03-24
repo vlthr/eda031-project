@@ -1,5 +1,5 @@
 #include "news.h"
-#include "database.h"
+#include "inmemdb.h"
 #include <iostream>
 #include <stdexcept>
 #include <ctime>
@@ -37,7 +37,7 @@ void printResult(bool b){
 }
 int main(){
     //Sqldb *sqldb = new Sqldb("Database.db");
-    Database *sqldb = new Database();
+    Inmemdb *sqldb = new Inmemdb();
     
     int cmd;
     printInfo();
@@ -52,7 +52,7 @@ int main(){
                 //system("cp Database.template Database.db");
                 delete sqldb;
              //   sqldb = new Sqldb("Database.db");
-                sqldb = new Database();
+                sqldb = new Inmemdb();
                 break;
             case 1:
                 {

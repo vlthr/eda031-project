@@ -2,7 +2,7 @@
 #include "server.h"
 #include "connection.h"
 #include "connectionclosedexception.h"
-#include "database.h"
+#include "inmemdb.h"
 #include "abstractdb.h"
 #include "sqldb.h"
 #include "news.h"
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]){
             db = new Sqldb("Database.db");
         }else if(dbstr == "in-memory"){
 
-            db = new Database();
+            db = new Inmemdb();
         }else{
 		std::cerr << "Invalid database type. Choose 'sql' or 'in-memory'. " <<std::endl;
 		exit(1);
