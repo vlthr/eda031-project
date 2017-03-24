@@ -2,6 +2,7 @@
 #define ABSTRACTDB_H
 class Abstractdb{
  public:
+     virtual ~Abstractdb(){}
   virtual std::vector<std::pair<int, std::string>> list_newsgroups()=0;
   virtual std::vector<news::Article> list_articles(int ng_id)=0;
 

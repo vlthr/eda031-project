@@ -35,7 +35,7 @@ void initialize_db(Abstractdb *db){
     std::cout << a.id<<std::endl;
     //std::cout << "Title " + v.title + " Author " + v.author + " Content " + content << std::endl;
   }
-  std::cout << "Testing if newsgroup can be found : " << db->exists("std::yalla") << std::endl;
+  std::cout << "Testing if newsgroup can be found : " << db->exists("") << std::endl;
 }
 
 int main(int argc, char* argv[]){
@@ -152,10 +152,13 @@ int main(int argc, char* argv[]){
           // TODO: BREAK
           break;
         }
+
         }
 			} catch (ConnectionClosedException&) {
 				server.deregisterConnection(conn);
 				std::cout << "Client closed connection" << std::endl;
+                                delete db;
+                                return 1;
 			}
 		} else {
 			conn = std::make_shared<Connection>();

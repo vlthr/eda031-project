@@ -8,7 +8,7 @@
 class Sqldb: public Abstractdb{
 public:
 	Sqldb(std::string);
-	~Sqldb();
+	virtual ~Sqldb();
 	
         // returns a list with newsgroups in sorted order;
         std::vector<std::pair<int, std::string>> list_newsgroups();
