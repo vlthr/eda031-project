@@ -86,9 +86,13 @@ int main(int argc, char* argv[]){
           break;
         case Protocol::COM_CREATE_NG:{
           std::string name = read_com_create_ng(conn);
+          try{
           if (db->create_newsgroup(name)){
             write_ack(conn, Protocol::ANS_CREATE_NG);
           } else {
+            write_nak(conn, Protocol::ANS_CREATE_NG, Protocol::ERR_NG_ALREADY_EXISTS);
+          }
+          }catch (const std::invalid_argument& e) {
             write_nak(conn, Protocol::ANS_CREATE_NG, Protocol::ERR_NG_ALREADY_EXISTS);
           }
           break;
