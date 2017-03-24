@@ -20,7 +20,7 @@ LDLIBS = -lclientserver -lsqlite3
 #CPPFLAGS =  -stdlib=libc++
 #CXXFLAGS += -stdlib=libc++
 
-all: libclientserver.a testprog clientmain servermain
+all: libclientserver.a clientmain servermain
 
 
 
@@ -31,22 +31,21 @@ libclientserver.a: connection.o server.o news.o protocol.o
 	ar rv libclientserver.a news.o connection.o server.o protocol.o
 	ranlib libclientserver.a
 
-testprog: news.o testprog.o libclientserver.a inmemdb.o sqldb.o
-
 clientmain: clientmain.o libclientserver.a
 
 servermain: servermain.o libclientserver.a inmemdb.o sqldb.o
 
 install: all
-	cp ./clientmain bin/ 
-	cp ./servermain bin/ 
+	cp ./clientmain ../bin/ 
+	cp ./servermain ../bin/ 
+	cp ./Database.db ../bin/ 
 	
 # Phony targets
-.PHONY: all clean
+.PHONY: all clean 
 
 # Standard clean
 clean:
-	rm -f *.o libclientserver.a
+	rm -f *.o *.d libclientserver.a
 
 # Generate dependencies in *.d files
 %.d: %.cc
