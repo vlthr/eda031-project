@@ -157,8 +157,6 @@ int main(int argc, char* argv[]){
 			} catch (ConnectionClosedException&) {
 				server.deregisterConnection(conn);
 				std::cout << "Client closed connection" << std::endl;
-                                delete db;
-                                return 1;
 			}
 		} else {
 			conn = std::make_shared<Connection>();

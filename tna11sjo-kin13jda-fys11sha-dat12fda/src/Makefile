@@ -46,6 +46,8 @@ install: all
 # Standard clean
 clean:
 	rm -f *.o *.d libclientserver.a
+	rm ./clientmain
+	rm ./servermain
 
 # Generate dependencies in *.d files
 %.d: %.cc
